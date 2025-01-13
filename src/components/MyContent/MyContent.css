@@ -1,0 +1,14 @@
+.contentContainer {
+  padding: 0 48px;
+}
+.content {
+  padding: 12px;
+}
+
+.titleContainer {
+  text-align: center;
+  font-size: 32px;
+  margin-bottom: 10px;
+  font-weight: bold;
+  color: blueviolet;
+}
