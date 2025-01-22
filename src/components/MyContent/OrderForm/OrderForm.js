@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Button, Form, Input, Radio } from 'antd'
-import { SendOutlined } from '@ant-design/icons'
+import { SendOutlined, CloseOutlined } from '@ant-design/icons'
 import { getUser, setOrder } from '../../../services'
 import { orderStore } from '../../../stores'
 
@@ -16,6 +16,7 @@ const OrderForm = ({ messageApi }) => {
       setOrderID(order.data.id)
     } else {
       setOrderID(null)
+      form.resetFields()
     }
     //不把form加進依賴陣列，他又要警告我了
   }, [order, form])
@@ -129,6 +130,17 @@ const OrderForm = ({ messageApi }) => {
       </Form.Item>
 
       <Form.Item label="" style={{ textAlign: 'right' }}>
+        <Button
+          type="default"
+          htmlType="button"
+          icon={<CloseOutlined />}
+          iconPosition="start"
+          color="gold"
+          style={{ marginRight: '10px',display: orderID ? 'inline' : 'none' }}
+          onClick={() => resetOrder()}
+        >
+          取消
+        </Button>
         <Button
           type="primary"
           htmlType="submit"

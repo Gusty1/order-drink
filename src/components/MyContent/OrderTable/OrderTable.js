@@ -4,13 +4,14 @@ import io from 'socket.io-client'
 import { EditFilled, DeleteFilled } from '@ant-design/icons'
 import { getTodayOrders, deleteOrder, getUser } from '../../../services'
 import { orderStore } from '../../../stores'
+import { defaultSetting } from '../../../constants'
 import './OrderTable.css'
 
-const socket = io('http://localhost:5000') // 與後端 Socket.IO 連線
+const socket = io(`http://${defaultSetting.rootIPAddress}:5000`) // 與後端 Socket.IO 連線
 
 const OrderTable = ({ messageApi }) => {
   const [data, setData] = useState([])
-  const { getOrder, order } = orderStore()
+  const { getOrder, order, resetOrder } = orderStore()
   const [orderID, setOrderID] = useState(null)
 
   const columns = [
@@ -93,12 +94,12 @@ const OrderTable = ({ messageApi }) => {
       }
     },
     {
-      title: '',
+      title: '操作',
       dataIndex: 'id',
       key: 'operate',
       render: (id, all) => {
         const { drinkUser } = getUser()
-        const show = all.drinkUser === drinkUser
+        const show = all.drinkUser === drinkUser || drinkUser === 'root'
         return (
           <div
             style={{
@@ -133,6 +134,7 @@ const OrderTable = ({ messageApi }) => {
   const delOrder = (id) => {
     const delGo = async () => {
       await deleteOrder(id)
+      if (order?.data.id === id) resetOrder()
     }
     delGo()
     messageApi.success('刪除成功')

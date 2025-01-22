@@ -29,7 +29,7 @@ app.use(express.json())
 /**
  * 初始化 RethinkDB 資料庫和資料表
  */
-async function initializeDatabase() {
+async function initializeDatabase () {
   try {
     connection = await r.connect(dbConfig)
     console.log('RethinkDB 連接成功!')
@@ -54,7 +54,7 @@ async function initializeDatabase() {
 /**
  * 監聽資料表變化並透過 WebSocket 傳送更新
  */
-async function watchTableChanges() {
+async function watchTableChanges () {
   try {
     const cursor = await r.db(dbName).table(tableName).changes().run(connection)
     console.log(`正在監聽資料表 "${tableName}" 的變化...`)
@@ -180,28 +180,27 @@ app.delete('/deleteOrder/:id', async (req, res) => {
 //取得一筆資料
 app.get('/getOrder/:id', async (req, res) => {
   try {
-    const { id } = req.params // 从 URL 中获取 id 参数
-
-    // 确保 id 是有效的
+    const { id } = req.params // 從URL中獲取id參數
+    // 確保id是有效的
     if (!id) {
       return res.status(400).json({ message: 'ID 无效' })
     }
 
-    // 根据 id 获取数据
+    // 根據id獲取數據
     const result = await r
       .db(dbName)
       .table(tableName)
-      .get(id) // 根据 id 查找该数据
+      .get(id) // 根據id查找該數據
       .run(connection)
 
     if (result) {
-      res.status(200).json(result) // 返回找到的数据
+      res.status(200).json(result) 
     } else {
-      res.status(404).json({ message: '数据未找到' }) // 如果没有找到数据，返回 404
+      res.status(404).json({ message: '查無資料' })
     }
   } catch (error) {
     console.error('获取数据时出错:', error)
-    res.status(500).json({ error: error.message }) // 处理其他错误
+    res.status(500).json({ error: error.message }) // 處理其他錯誤
   }
 })
 
@@ -209,21 +208,21 @@ app.get('/getOrder/:id', async (req, res) => {
  * 獲取當前主機的 IPv4 地址
  */
 app.get('/userIP', (req, res) => {
-  const networkInterfaces = os.networkInterfaces()
+  try {
+    let clientIP = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
 
-  for (const interfaceName in networkInterfaces) {
-    const interfaces = networkInterfaces[interfaceName]
-
-    for (const iface of interfaces) {
-      // 找到第一個符合條件的 IPv4 地址
-      if (iface.family === 'IPv4' && !iface.internal) {
-        return res.json({ name: interfaceName, address: iface.address })
-      }
+    // 使用正則表達式清理 IPv6 表示法，提取 IPv4 部分
+    const ipv4Match = clientIP.match(/(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/);
+    if (ipv4Match) {
+      clientIP = ipv4Match[1];
     }
-  }
 
-  res.status(404).json({ error: '找不到有效的 IPv4 地址' })
-})
+    return res.json({ address: clientIP || '' });
+  } catch (error) {
+    // 返回一致的結構
+    res.status(500).json({ address: null, error: '無法獲取 IP 地址' });
+  }
+});
 
 /**
  * 啟動伺服器
