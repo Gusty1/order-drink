@@ -6,7 +6,6 @@ const http = require('http')
 const r = require('rethinkdb')
 const cors = require('cors')
 const socketIo = require('socket.io')
-const os = require('os')
 
 const app = express()
 const PORT = 5000

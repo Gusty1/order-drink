@@ -25,7 +25,7 @@ const OrderForm = ({ messageApi }) => {
   const sendForm = async (data) => {
     try {
       setSending(true)
-      const { drinkUser } = getUser()
+      const { drinkUser } = order?.data || getUser()
       const formData = {
         ...data,
         drinkUser,

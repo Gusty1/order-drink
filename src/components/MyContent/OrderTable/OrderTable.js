@@ -143,6 +143,11 @@ const OrderTable = ({ messageApi }) => {
   useEffect(() => {
     const getData = async () => {
       const data = await getTodayOrders()
+      if (!order?.id) resetOrder()
+      else if (data?.data?.data) {
+        if (!data.data.data.find((item) => item.id === order.id)) resetOrder()
+      }
+
       setData(data.data.data)
     }
 
