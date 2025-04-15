@@ -53,7 +53,7 @@ const OrderForm = ({ messageApi }) => {
       onFinish={(data) => sendForm(data)}
     >
       <Form.Item
-        label="名稱"
+        label="姓名"
         name="username"
         rules={[
           {

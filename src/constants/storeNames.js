@@ -15,7 +15,9 @@ const storeNames = [
   { value: '鮮茶道', label: '鮮茶道' },
   { value: '麻古', label: '麻古' },
   { value: '龜記', label: '龜記' },
-  { value: '清心', label: '清心' }
+  { value: '清心', label: '清心' },
+  { value: '可不可', label: '可不可' },
+  { value: '阿義', label: '阿義' }
 ]
 
 export default storeNames

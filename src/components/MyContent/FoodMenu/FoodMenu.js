@@ -22,6 +22,7 @@ const FoodMenu = ({ storeName }) => {
         style={{ marginBottom: 10, width: '100%' }}
         onChange={(menu) => changeMenu(menu)}
         options={storeNames}
+        disabled={true}
       />
       <Image
         width="100%"
