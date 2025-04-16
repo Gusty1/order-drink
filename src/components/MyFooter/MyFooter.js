@@ -5,7 +5,7 @@ const MyFooter = () => {
   const { Footer } = Layout
 
   return (
-    <Footer style={MyFooterStyle()}>©{new Date().getFullYear()} Created by Gray</Footer>
+    <Footer style={MyFooterStyle()}>&copy;{new Date().getFullYear()} Created by Gray</Footer>
   )
 }
 export default MyFooter
