@@ -15,12 +15,12 @@ const MyContent = ({ messageApi }) => {
     <Content className="contentContainer">
       <div className="content">
         <div className="titleContainer">{reasonInfo.title}</div>
-        <div style={{ display: 'flex', gap: 10 }}>
+        <div style={{ display: 'flex', gap: 10, maxHeight: '55vh', overflow: 'hidden' }}>
           <div style={{ flex: 1 }}>
             <FoodMenu storeName={reasonInfo.storeName} />
           </div>
           <div style={{ flex: 1 }}>
-            <OrderForm messageApi={messageApi}/>
+            <OrderForm messageApi={messageApi} />
           </div>
         </div>
         <Divider style={{ backgroundColor: bgColor }} />

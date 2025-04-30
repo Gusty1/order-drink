@@ -13,3 +13,8 @@
 - 前端: react、ant design
 - 消息: zustand、socket.io
 - 資料存儲: rethinkDB
+
+## TODO(做不到但又想做的事)
+
+- [ ] 自動爬取最新菜單，目前都需要手動更換
+- [ ] 可以跟定飲料的網站連結，一鍵下訂

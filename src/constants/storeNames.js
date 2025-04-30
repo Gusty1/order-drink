@@ -8,7 +8,6 @@ const storeNames = [
   { value: '大苑子', label: '大苑子' },
   { value: '烏弄', label: '烏弄' },
   { value: '德正', label: '德正' },
-  { value: '春水堂', label: '春水堂' },
   { value: '珍主丹', label: '珍主丹' },
   { value: '萬波', label: '萬波' },
   { value: '迷克夏', label: '迷克夏' },

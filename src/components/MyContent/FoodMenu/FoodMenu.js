@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Image, Select } from 'antd'
-import { storeNames } from '../../../constants'
+import { storeNames, storeMenuImages } from '../../../constants'
 
 const FoodMenu = ({ storeName }) => {
   const [storeMenu, setStoreMenu] = useState(null)
@@ -26,7 +26,11 @@ const FoodMenu = ({ storeName }) => {
       />
       <Image
         width="100%"
-        src={require(`../../../assets/images/storeMenus/${storeMenu}.png`)}
+        height='100%'
+        src={storeMenuImages['store_' + storeMenu]}
+        style={{
+          objectFit: 'contain',
+        }}
       />
     </>
   )
