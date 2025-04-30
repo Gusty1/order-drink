@@ -86,9 +86,12 @@ const OrderTable = ({ messageApi }) => {
       key: 'remark'
     },
     {
-      title: '價格',
+      title: '價格*數量',
       dataIndex: 'price',
       key: 'price',
+      render: (price, fullData) => {
+        return <span>{price + '*' + fullData.count + '=' + price * fullData.count}</span>
+      },
       sorter: {
         compare: (a, b) => a.price - b.price
       }
@@ -112,7 +115,13 @@ const OrderTable = ({ messageApi }) => {
               type="primary"
               shape="circle"
               icon={<EditFilled />}
-              onClick={() => editOrder(id)}
+              onClick={() => {
+                window.scrollTo({
+                  top: 0,
+                  behavior: 'smooth' // 平滑滚动
+                })
+                editOrder(id)
+              }}
             />
             <Popconfirm
               title="確定要刪除?"
@@ -185,7 +194,7 @@ const OrderTable = ({ messageApi }) => {
       footer={() => {
         return (
           <div style={{ textAlign: 'right' }}>
-            總計: {data.reduce((acc, cur) => acc + cur.price, 0)}
+            總計: {data.reduce((acc, cur) => acc + cur.price * cur.count, 0)}
           </div>
         )
       }}
