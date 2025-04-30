@@ -93,7 +93,7 @@ app.get('/getTodayOrders', async (req, res) => {
           .and(row('date').month().eq(utcMonth))
           .and(row('date').day().eq(utcDay))
       )
-      .orderBy(r.desc('date'))
+      .orderBy(r.desc('id'))
       .run(connection)
 
     // 將結果轉換為陣列
