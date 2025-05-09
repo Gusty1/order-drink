@@ -1,7 +1,7 @@
 const defaultSetting = {
   darkMode: false,
   disabledMenu: false,
-  rootIPAddress: '192.168.92.142'
+  rootIPAddress: '192.168.139.142'
 }
 
 export default defaultSetting
