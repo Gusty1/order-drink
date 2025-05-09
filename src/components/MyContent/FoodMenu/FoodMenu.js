@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Image, Select } from 'antd'
-import { storeNames, storeMenuImages } from '../../../constants'
+import { storeNames, storeMenuImages, defaultSetting } from '../../../constants'
 
 const FoodMenu = ({ storeName }) => {
   const [storeMenu, setStoreMenu] = useState(null)
@@ -22,14 +22,14 @@ const FoodMenu = ({ storeName }) => {
         style={{ marginBottom: 10, width: '100%' }}
         onChange={(menu) => changeMenu(menu)}
         options={storeNames}
-        disabled={true}
+        disabled={defaultSetting.disabledMenu}
       />
       <Image
         width="100%"
-        height='100%'
+        height="100%"
         src={storeMenuImages['store_' + storeMenu]}
         style={{
-          objectFit: 'contain',
+          objectFit: 'contain'
         }}
       />
     </>
