@@ -18,7 +18,7 @@ def get_output_path(store, ext):
     else :
         return os.path.join(root_dir, 'src','assets', 'images', 'storeMenus', f'{store}{ext}')
 
-def load_store_dict(path="./storeAndUrl.json"):
+def load_store_dict():
     """取得本地商家和網址的對應字典"""
     base_dir = os.path.dirname(os.path.abspath(__file__))  # 取得當前 .py 檔案的資料夾
     path = os.path.join(base_dir, 'storeAndUrl.json')
