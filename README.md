@@ -50,7 +50,7 @@
 
 ### [50嵐](http://50lan.com/web/%E5%8C%97%E5%8D%8050%E5%B5%90%E5%82%B3%E7%9C%9F%E8%A8%82%E8%B3%BC%E5%96%AE(%E7%A9%BA%E7%99%BD).doc '50嵐')
 
-從官網來看就是古老的飲料店，網頁還有adobe，訂單還是用doc，有夠怪的
+從官網來看就是古老的飲料店，網頁還有adobe，菜單還是用doc，有夠怪的
 
 ### [COCO](https://supertaste.tvbs.com.tw/food/347016 'COCO')
 
@@ -66,7 +66,7 @@
 
 ### [烏弄](https://drive.google.com/drive/folders/1fCxZ4KPaHj8XBvro3KjSHM4fR4vgjfWE '烏弄')
 
-有官網，但沒想到菜單是放在google雲端硬碟，這樣更新的化連結不也是會變
+有官網，但沒想到菜單是放在google雲端硬碟，這樣更新的話連結不也是會變
 
 ### [鮮茶道](https://icard.ai/shop/reward/channel%2F5e0ac3b11b207d182d6bd3d3?type=channel_concept%2F5f6ab11b3d97d93195e6707c '鮮茶道')
 
