@@ -1,9 +1,7 @@
-## 爬取飲料店菜單
-
 name: Get Drink Menu
 
 on:
-  workflow_dispatch:  # 手動執行
+  workflow_dispatch:  # 手動觸發
 
 jobs:
   convert_pdf:
@@ -14,21 +12,23 @@ jobs:
         store: ['19', 'comebuy']
 
     steps:
-      - name: Checkout code 
+      - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          persist-credentials: true  # 這個確保 GITHUB_TOKEN 可用
 
-      - name: Set up Python 
-        uses: actions/setup-python@v4 
-        with: 
-          python-version: '3.13' 
-          cache: 'pip' # 啟用 setup-python 內建的 pip 快取
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.13'
+          cache: 'pip'
 
-      - name: Install dependencies 
+      - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Install poppler-utils 
+      - name: Install poppler-utils
         run: |
           sudo apt-get update
           sudo apt-get install -y poppler-utils
@@ -37,9 +37,16 @@ jobs:
         run: |
           python src/scrapy/scrapy_store_menu.py ${{ matrix.store }}
 
-      - name: Upload Menu Image for ${{ matrix.store }}
-        uses: actions/upload-artifact@v4 # 使用最新版本
-        if: success() # 只有在腳本成功時才上傳
-        with:
-          name: menu-image-${{ matrix.store }}-py${{ matrix.python-version }} # 產出物的名稱
-          path: ${{ github.workspace }}src/assets/images/storeMenus/${{ matrix.store }}.jpg # 相對於倉庫根目錄的圖片路徑
+      - name: Commit and push updated images
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+          git add src/assets/images/storeMenus/
+
+          if git diff --cached --quiet; then
+            echo "✅ No changes to commit."
+          else
+            git commit -m "🧋 Update drink menu image for store ${{ matrix.store }}"
+            git push
+          fi
