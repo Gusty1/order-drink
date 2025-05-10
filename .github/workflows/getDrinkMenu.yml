@@ -2,6 +2,8 @@ name: Get Drink Menu
 
 on:
   workflow_dispatch:  # 手動觸發
+  schedule:
+    - cron: '0 2 * * 1'  # 每週一早上 10 點（台灣時間）
 
 jobs:
   convert_pdf:
@@ -29,10 +31,12 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y poppler-utils
 
+      # 執行店家爬蟲程式
       - name: Run script for all stores
         run: |
           python src/scrapy/scrapy_store_menu.py 19 comebuy teatop 五桐號 大苑子 珍煮丹 萬波 阿義 麻古 可不可 迷客夏
 
+      # 把所有圖片一次commit
       - name: Commit and push updated images
         run: |
           git config --global user.name "github-actions[bot]"
