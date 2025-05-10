@@ -35,4 +35,4 @@ jobs:
 
       - name: Run script for store ${{ matrix.store }}
         run: |
-          python src/scrapy/scrapy_store_menu.py --store ${{ matrix.store }}
+          python src/scrapy/scrapy_store_menu.py ${{ matrix.store }}
