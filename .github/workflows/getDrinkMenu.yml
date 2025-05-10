@@ -7,40 +7,32 @@ jobs:
   convert_pdf:
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        store: ['19', 'comebuy','teatop','五桐號','大苑子','珍煮丹','萬波','阿義','麻古','可不可','迷客夏']
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          persist-credentials: true  # 這個確保 GITHUB_TOKEN 可用
-          
-      # 設置python環境
+          persist-credentials: true  # 確保 GITHUB_TOKEN 可用
+
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.13'
           cache: 'pip'
 
-      # 安裝python依賴
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-      # 安裝poppler pdf轉圖片會用到
+
       - name: Install poppler-utils
         run: |
           sudo apt-get update
           sudo apt-get install -y poppler-utils
 
-      # 執行爬蟲程式
-      - name: Run script for store ${{ matrix.store }}
+      - name: Run script for all stores
         run: |
-          python src/scrapy/scrapy_store_menu.py ${{ matrix.store }}
+          python src/scrapy/scrapy_store_menu.py 19 comebuy teatop 五桐號 大苑子 珍煮丹 萬波 阿義 麻古 可不可 迷客夏
 
-      # 如果圖片有異動commit
       - name: Commit and push updated images
         run: |
           git config --global user.name "github-actions[bot]"
@@ -51,6 +43,6 @@ jobs:
           if git diff --cached --quiet; then
             echo "No changes to commit."
           else
-            git commit -m "Update drink menu image for store ${{ matrix.store }}"
+            git commit -m "Update drink menu images for all stores"
             git push
           fi
