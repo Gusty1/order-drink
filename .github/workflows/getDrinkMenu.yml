@@ -45,8 +45,8 @@ jobs:
           git add src/assets/images/storeMenus/
 
           if git diff --cached --quiet; then
-            echo "✅ No changes to commit."
+            echo "No changes to commit."
           else
-            git commit -m "🧋 Update drink menu image for store ${{ matrix.store }}"
+            git commit -m "Update drink menu image for store ${{ matrix.store }}"
             git push
           fi
