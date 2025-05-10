@@ -76,6 +76,14 @@
 
 有官網，網站做得不錯，但卻沒有菜單可以下載，這個連結是某個部落格的，希望他會更新
 
+### [一沐日](https://roo.cash/blog/aniceholiday-recommendation-article/ '一沐日')
+
+不知什麼出現的飲料店，有官網，但菜單不是圖片
+
+### [吾奶王](https://www.facebook.com/wo.milk.king '吾奶王')
+
+不知什麼出現的飲料店，沒有官網，只有FB圖片
+
 ### PDF下載圖片
 
 部分店家的菜單是用PDF的，windows要處理pdf還要先裝[poppler](https://github.com/oschwartz10612/poppler-windows 'poppler')，不然不能下載PDF處理後的圖片  
