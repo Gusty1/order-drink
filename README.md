@@ -22,7 +22,7 @@
    - disabledMenu: 下拉菜單是否可以用
    - rootIPAddress: 管理者ipv4，可以修改所有訂單資料，其他人只能改自己的
 
-4. 執行: 開啟terminal進入本專案輸入指令，這會開啟客戶端和server端程式
+4. 先開啟rethinkDB，再開啟terminal進入本專案輸入指令，這會開啟客戶端和server端程式
 
  ```terminal
  npm start
