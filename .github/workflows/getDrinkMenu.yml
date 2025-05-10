@@ -36,3 +36,10 @@ jobs:
       - name: Run script for store ${{ matrix.store }}
         run: |
           python src/scrapy/scrapy_store_menu.py ${{ matrix.store }}
+
+      - name: Upload Menu Image for ${{ matrix.store }}
+        uses: actions/upload-artifact@v4 # 使用最新版本
+        if: success() # 只有在腳本成功時才上傳
+        with:
+          name: menu-image-${{ matrix.store }}-py${{ matrix.python-version }} # 產出物的名稱
+          path: ${{ github.workspace }}src/assets/images/storeMenus/${{ matrix.store }}.jpg # 相對於倉庫根目錄的圖片路徑
