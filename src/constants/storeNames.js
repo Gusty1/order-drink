@@ -55,8 +55,8 @@ const storeNames = [
     url: 'https://raw.githubusercontent.com/Gusty1/order-drink/refs/heads/master/src/assets/images/storeMenus/%E5%BE%B7%E6%AD%A3.jpg'
   },
   {
-    value: '清新',
-    label: '清新',
+    value: '清心',
+    label: '清心',
     url: 'https://raw.githubusercontent.com/Gusty1/order-drink/refs/heads/master/src/assets/images/storeMenus/%E6%B8%85%E5%BF%83.jpg'
   },
   {
