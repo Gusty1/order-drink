@@ -1,0 +1,38 @@
+## 爬取飲料店菜單
+
+name: Get Drink Menu
+
+on:
+  workflow_dispatch:  # 手動執行
+
+jobs:
+  convert_pdf:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        store: ['19', 'comebuy']
+
+    steps:
+      - name: Checkout code 
+        uses: actions/checkout@v4
+
+      - name: Set up Python 
+        uses: actions/setup-python@v4 
+        with: 
+          python-version: '3.13' 
+          cache: 'pip' # 啟用 setup-python 內建的 pip 快取
+
+      - name: Install dependencies 
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Install poppler-utils 
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y poppler-utils
+
+      - name: Run script for store ${{ matrix.store }}
+        run: |
+          python src/scrapy/scrapy_store_menu.py --store ${{ matrix.store }}
