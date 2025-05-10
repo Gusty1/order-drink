@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Image, Select } from 'antd'
-import { storeNames, storeMenuImages, defaultSetting } from '../../../constants'
+import { storeNames, defaultSetting } from '../../../constants'
 
 const FoodMenu = ({ storeName }) => {
   const [storeMenu, setStoreMenu] = useState(null)
@@ -27,9 +27,12 @@ const FoodMenu = ({ storeName }) => {
       <Image
         width="100%"
         height="100%"
-        src={storeMenuImages['store_' + storeMenu]}
+        src={storeNames.find((item) => item.value === storeMenu).url}
         style={{
           objectFit: 'contain'
+        }}
+        preview={{
+          src: 'https://c.tenor.com/d-lz7Nu6X2oAAAAC/tenor.gif',
         }}
       />
     </>
