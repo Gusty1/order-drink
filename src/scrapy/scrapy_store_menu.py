@@ -142,11 +142,11 @@ def download_images_from_url(store: str):
         return None
 
 def main():
-    # 使用 argparse 解析命令行參數，範例: python ./src./scrapy/scrapy_store_menu.py comebuy
     parser = argparse.ArgumentParser(description="下載商家圖片")
-    parser.add_argument('store', type=str, help="商家編號")
+    parser.add_argument('stores', nargs='+', type=str, help="商家編號清單（可多個）")
     args = parser.parse_args()
-    download_images_from_url(args.store)
+    for store in args.stores:
+        download_images_from_url(store)
 
 if __name__ == '__main__':
     main()
