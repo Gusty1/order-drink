@@ -1,6 +1,7 @@
 /**
  * 連接 RethinkDB 的 Express 伺服器
  */
+require('dotenv').config();
 const express = require('express')
 const http = require('http')
 const r = require('rethinkdb')
@@ -229,7 +230,7 @@ app.get('/userIP', (req, res) => {
 server.listen(PORT, async () => {
   await initializeDatabase()
   watchTableChanges()
-  console.log(`Server is running on http://localhost:${PORT}`)
+    console.log(`Server is running on http://${process.env.ROOT_IP_ADDRESS}:${PORT}`)
 })
 
 /**

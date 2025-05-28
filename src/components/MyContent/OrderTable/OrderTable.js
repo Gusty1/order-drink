@@ -4,10 +4,9 @@ import io from 'socket.io-client'
 import { EditFilled, DeleteFilled } from '@ant-design/icons'
 import { getTodayOrders, deleteOrder, getUser } from '../../../services'
 import { orderStore } from '../../../stores'
-import { defaultSetting } from '../../../constants'
 import './OrderTable.css'
 
-const socket = io(`http://${defaultSetting.rootIPAddress}:5000`) // 與後端 Socket.IO 連線
+const socket = io(`http://${process.env.REACT_APP_ROOT_IP_ADDRESS}:5000`) // 與後端 Socket.IO 連線
 
 const OrderTable = ({ messageApi }) => {
   const [data, setData] = useState([])

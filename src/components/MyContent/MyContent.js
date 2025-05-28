@@ -1,5 +1,4 @@
 import { Layout, Divider } from 'antd'
-import { reasonInfo } from '../../constants'
 import FoodMenu from './FoodMenu/FoodMenu'
 import OrderForm from './OrderForm/OrderForm'
 import OrderTable from './OrderTable/OrderTable'
@@ -14,10 +13,10 @@ const MyContent = ({ messageApi }) => {
   return (
     <Content className="contentContainer">
       <div className="content">
-        <div className="titleContainer">{reasonInfo.title}</div>
+        <div className="titleContainer">{process.env.REACT_APP_TITLE}</div>
         <div style={{ display: 'flex', gap: 10, maxHeight: '55vh', overflow: 'hidden' }}>
           <div style={{ flex: 1 }}>
-            <FoodMenu storeName={reasonInfo.storeName} />
+            <FoodMenu storeName={process.env.REACT_APP_STORE_NAME} />
           </div>
           <div style={{ flex: 1 }}>
             <OrderForm messageApi={messageApi} />
