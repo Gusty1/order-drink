@@ -156,7 +156,7 @@ const OrderTable = ({ messageApi }) => {
         if (!data.data.data.find((item) => item.id === order.id)) resetOrder()
       }
 
-      setData(data.data.data)
+      setData(data?.data?.data ?? [])
     }
 
     const handleTableChange = (change) => {

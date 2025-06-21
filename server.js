@@ -2,6 +2,7 @@
  * 連接 RethinkDB 的 Express 伺服器
  */
 require('dotenv').config();
+const path = require('path');
 const express = require('express')
 const http = require('http')
 const r = require('rethinkdb')
@@ -16,7 +17,7 @@ const io = socketIo(server, {
     origin: '*' // 設定允許的跨域來源
   }
 })
-const dbConfig = { host: 'localhost', port: 28015 }
+const dbConfig = { host: process.env.RETHINKDB_HOST, port: 28015 }
 
 let connection = null
 const dbName = 'order_drink'
@@ -31,20 +32,26 @@ app.use(express.json())
  */
 async function initializeDatabase () {
   try {
-    connection = await r.connect(dbConfig)
-    console.log('RethinkDB 連接成功!')
+    // 連接 RethinkDB
+    connection = await r.connect(dbConfig);
+    console.log('✅ RethinkDB 連接成功');
 
-    const dbs = await r.dbList().run(connection)
+    // 確認資料庫存在，不存在就建立
+    const dbs = await r.dbList().run(connection);
     if (!dbs.includes(dbName)) {
-      await r.dbCreate(dbName).run(connection)
-      console.log(`Database "${dbName}" 建立成功`)
+      await r.dbCreate(dbName).run(connection);
+      console.log(`✅ Database "${dbName}" 建立成功`);
     }
 
-    const tables = await r.db(dbName).tableList().run(connection)
-    if (!tables.includes(tableName)) {
-      await r.db(dbName).tableCreate(tableName).run(connection)
-      console.log(`Table "${tableName}" 建立成功`)
+    // 確認資料表，不存在就建立；存在就先刪掉再建立
+    const tables = await r.db(dbName).tableList().run(connection);
+    if (tables.includes(tableName)) {
+      await r.db(dbName).tableDrop(tableName).run(connection);
+      console.log(`🧹 Table "${tableName}" 刪除舊表`);
     }
+
+    await r.db(dbName).tableCreate(tableName, { replicas: 1, shards: 1 }).run(connection);
+    console.log(`✅ Table "${tableName}" 建立成功 (replicas=1, shards=1)`);
   } catch (error) {
     console.error('初始化資料庫時出錯:', error)
     process.exit(1) // 無法連接資料庫時退出
@@ -194,7 +201,7 @@ app.get('/getOrder/:id', async (req, res) => {
       .run(connection)
 
     if (result) {
-      res.status(200).json(result) 
+      res.status(200).json(result)
     } else {
       res.status(404).json({ message: '查無資料' })
     }
@@ -224,13 +231,21 @@ app.get('/userIP', (req, res) => {
   }
 });
 
+// 打包docker會用到的東西
+app.use(express.static(path.join(__dirname, "build")));
+
+// 最後面加這行處理所有未命中路由給前端
+app.get("*", (req, res) => {
+  res.sendFile(path.resolve(__dirname, "build", "index.html"));
+});
+
 /**
  * 啟動伺服器
  */
 server.listen(PORT, async () => {
   await initializeDatabase()
   watchTableChanges()
-    console.log(`Server is running on http://${process.env.ROOT_IP_ADDRESS}:${PORT}`)
+  console.log(`Server is running on http://${process.env.ROOT_IP_ADDRESS}:${PORT}`)
 })
 
 /**

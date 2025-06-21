@@ -41,9 +41,32 @@
 ## TODO(做不到但又想做的事)
 
 - [x] 自動爬取最新菜單，目前都需要手動更換(部分店家可以做到完成)
+- [x] 打包成docker
 - [ ] 可以跟訂飲料的網站連結，一鍵下訂。
-  - 靠杯一下某個訂飲料的網站換個店家而已，訂購資料全都要重打什麼大便，氣氣氣~
-- [ ] 打包成docker，有稍微試過但失敗...
+  - 靠杯一下某個訂飲料的網站換個分店而已，訂購資料全都要重打什麼大便，氣氣氣~
+
+## Docker 說明
+
+- ROOT_IP_ADDRESS: 啟動電腦的ipv4
+- RETHINKDB_HOST: 固定`rethinkdb`
+- REACT_APP_TITLE: 訂飲料的標題，ex: XX請喝飲料
+- REACT_APP_STORE_NAME: 預設飲料店名稱，從下方菜單選一個
+- REACT_APP_ROOT_IP_ADDRESS: 跟ROOT_一樣IP_ADDRESS
+
+```terminal
+docker pull gray9527/order-drink
+
+docker run -d \
+  --name order-drink \
+  -e ROOT_IP_ADDRESS="192.168.164.142" \
+  -e RETHINKDB_HOST="rethinkdb" \
+  -e REACT_APP_TITLE="XX請喝飲料，謝謝XX" \
+  -e REACT_APP_STORE_NAME="迷客夏" \
+  -e REACT_APP_ROOT_IP_ADDRESS="192.168.164.142" \
+  -e RETHINKDB_HOST="rethinkdb" \
+  -p 5000:5000 \
+  gray9527/order-drink:latest
+```
 
 ## 菜單
 
