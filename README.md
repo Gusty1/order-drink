@@ -68,6 +68,8 @@ docker run -d \
   gray9527/order-drink:latest
 ```
 
+最後開啟 [http://localhost:5000](http://localhost:5000 '網頁')，如果要給別人用記得把localhost換成你的ipv4
+
 ## 菜單
 
 ### 支援的店家
