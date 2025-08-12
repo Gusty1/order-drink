@@ -47,28 +47,66 @@
 
 ## Docker 說明
 
-- ROOT_IP_ADDRESS: 啟動電腦的ipv4
-- RETHINKDB_HOST: 固定`rethinkdb`
-- REACT_APP_TITLE: 訂飲料的標題，ex: XX請喝飲料
-- REACT_APP_STORE_NAME: 預設飲料店名稱，從下方菜單選一個
-- REACT_APP_ROOT_IP_ADDRESS: 跟ROOT_一樣IP_ADDRESS
+對docker沒有很熟，可能會有問題...
 
-```terminal
-docker pull gray9527/order-drink
+### 環境變數說明
 
-docker run -d \
-  --name order-drink \
-  -e ROOT_IP_ADDRESS="192.168.164.142" \
-  -e RETHINKDB_HOST="rethinkdb" \
-  -e REACT_APP_TITLE="XX請喝飲料，謝謝XX" \
-  -e REACT_APP_STORE_NAME="迷客夏" \
-  -e REACT_APP_ROOT_IP_ADDRESS="192.168.164.142" \
-  -e RETHINKDB_HOST="rethinkdb" \
-  -p 5000:5000 \
-  gray9527/order-drink:latest
+| 變數名稱                        | 說明                               |
+| --------------------------- | -------------------------------- |
+| `ROOT_IP_ADDRESS`           | 啟動主機的 IPv4 位址                    |
+| `RETHINKDB_HOST`            | RethinkDB 服務主機名稱，通常是 `rethinkdb` |
+| `REACT_APP_TITLE`           | 訂飲料頁面標題，例如：XX請喝飲料                |
+| `REACT_APP_STORE_NAME`      | 預設飲料店名稱，會顯示在菜單中                  |
+| `REACT_APP_ROOT_IP_ADDRESS` | 與 `ROOT_IP_ADDRESS` 相同，用於前端配置    |
+
+1. 在專案根目錄建立 `.env` 檔，內容範例如：
+
+  ```env
+  ROOT_IP_ADDRESS=192.168.164.142
+  RETHINKDB_HOST=rethinkdb
+  REACT_APP_TITLE=XX請喝飲料，謝謝XX
+  REACT_APP_STORE_NAME=迷客夏
+  REACT_APP_ROOT_IP_ADDRESS=192.168.164.142
+  ```
+
+2. 確認目錄下有 `docker-compose.yml`，內容示範：
+
+```yaml
+version: "3"
+services:
+  app:
+    image: gray9527/order-drink:latest
+    environment:
+      - ROOT_IP_ADDRESS=${ROOT_IP_ADDRESS}
+      - RETHINKDB_HOST=${RETHINKDB_HOST}
+      - REACT_APP_TITLE=${REACT_APP_TITLE}
+      - REACT_APP_STORE_NAME=${REACT_APP_STORE_NAME}
+      - REACT_APP_ROOT_IP_ADDRESS=${REACT_APP_ROOT_IP_ADDRESS}
+    ports:
+      - "5000:5000"
+    depends_on:
+      - rethinkdb
+
+  rethinkdb:
+    image: rethinkdb:latest
+    ports:
+      - "8080:8080"
+      - "28015:28015"
 ```
 
-最後開啟 [http://localhost:5000](http://localhost:5000 '網頁')，如果要給別人用記得把localhost換成你的ipv4
+3. 執行指令啟動服務：
+
+```bash
+docker compose up -d
+```
+
+4. 用瀏覽器開啟 [http://localhost:5000](http://localhost:5000)
+
+### 停止服務
+
+```bash
+docker compose down
+```
 
 ## 菜單
 
