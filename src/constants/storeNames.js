@@ -82,7 +82,7 @@ const storeNames = [
   {
     value: '阿義',
     label: '阿義',
-    url: 'https://raw.githubusercontent.com/Gusty1/order-drink/refs/heads/master/src/assets/images/storeMenus/%E9%98%BF%E7%BE%A9.png'
+    url: 'https://raw.githubusercontent.com/Gusty1/order-drink/refs/heads/master/src/assets/images/storeMenus/%E9%98%BF%E7%BE%A9.jpg'
   },
   {
     value: '鮮茶道',
