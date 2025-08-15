@@ -1,7 +1,7 @@
 const storeNames = [
   {
     value: '19',
-    label: '19',
+    label: '19茶屋',
     url: 'https://raw.githubusercontent.com/Gusty1/order-drink/refs/heads/master/src/assets/images/storeMenus/19.jpg'
   },
   {
@@ -98,6 +98,36 @@ const storeNames = [
     value: '龜記',
     label: '龜記',
     url: 'https://raw.githubusercontent.com/Gusty1/order-drink/refs/heads/master/src/assets/images/storeMenus/%E9%BE%9C%E8%A8%98.jpg'
+  },
+  {
+    value: '茶湯會',
+    label: '茶湯會',
+    url: 'https://raw.githubusercontent.com/Gusty1/order-drink/refs/heads/master/src/assets/images/storeMenus/%E8%8C%B6%E6%B9%AF%E6%9C%83.jpg'
+  },
+  {
+    value: '花好月圓',
+    label: '花好月圓',
+    url: 'https://raw.githubusercontent.com/Gusty1/order-drink/refs/heads/master/src/assets/images/storeMenus/%E8%8A%B1%E5%A5%BD%E6%9C%88%E5%9C%93.jpg'
+  },
+  {
+    value: '清原',
+    label: '清原',
+    url: 'https://raw.githubusercontent.com/Gusty1/order-drink/refs/heads/master/src/assets/images/storeMenus/%E6%B8%85%E5%8E%9F.jpg'
+  },
+  {
+    value: '雷的茶',
+    label: '雷的茶',
+    url: 'https://raw.githubusercontent.com/Gusty1/order-drink/refs/heads/master/src/assets/images/storeMenus/%E9%9B%B7%E7%9A%84%E8%8C%B6.jpg'
+  },
+  {
+    value: '蔗家店',
+    label: '蔗家店',
+    url: 'https://raw.githubusercontent.com/Gusty1/order-drink/refs/heads/master/src/assets/images/storeMenus/%E8%94%97%E5%AE%B6%E5%BA%97.jpg'
+  },
+  {
+    value: '福氣塘',
+    label: '福氣塘',
+    url: 'https://raw.githubusercontent.com/Gusty1/order-drink/refs/heads/master/src/assets/images/storeMenus/%E7%A6%8F%E6%B0%A3%E5%A1%98.jpg'
   }
 ]
 

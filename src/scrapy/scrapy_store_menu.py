@@ -9,14 +9,16 @@ import urllib3
 ## 爬pdf會有警告。所以關閉
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
+
 def get_output_path(store, ext):
     """指令圖片匯出目錄，要從根目錄執行才可以 ex: ./src./scrapy/scrapy_store_menu.py"""
     base_dir = os.path.dirname(os.path.abspath(__file__))  # 取得目前 .py 檔案路徑
     root_dir = os.path.abspath(os.path.join(base_dir, '..', '..'))  # 回到專案根目錄
-    if ext =='':
+    if ext == '':
         return os.path.join(root_dir, 'src', 'assets', 'images', 'storeMenus', f'{store}')
-    else :
-        return os.path.join(root_dir, 'src','assets', 'images', 'storeMenus', f'{store}{ext}')
+    else:
+        return os.path.join(root_dir, 'src', 'assets', 'images', 'storeMenus', f'{store}{ext}')
+
 
 def load_store_dict():
     """取得本地商家和網址的對應字典"""
@@ -63,12 +65,24 @@ def get_image_url(store: str, soup: BeautifulSoup) -> str:
         tag = soup.find_all('nav', class_='menuListSub')
         tag = tag[1].find('a')
         return 'https://www.macutea.com.tw/' + tag.get('href') if tag else ''
+    elif store == '清原':
+        tag = soup.find('img', class_='wp-image-2488')
+        tag = tag.find_parent('a')
+        return tag.get('href') if tag else ''
+    elif store == '花好月圓':
+        tag = soup.find('div', class_='menuArea')
+        tag = tag.find('img')
+        return tag.get('src') if tag else ''
+    elif store == '茶湯會':
+        tag = soup.find('a', class_='btn01')
+        return tag.get('href') if tag else ''
     return ''
+
 
 def get_file_extension(url: str) -> str:
     """取得圖片檔案的副檔名"""
     ext = os.path.splitext(url.split("?")[0])[1].lower()
-    return ext if ext in ['.jpg', '.jpeg', '.png', '.webp'] else '.jpg'
+    return ext if ext in ['.jpg', '.jpeg', '.webp'] else '.jpg'
 
 
 def download_image(img_url: str, save_path: str):
@@ -91,6 +105,7 @@ def convert_pdf_to_image(pdf_data: bytes, page_number: int, output_image_path: s
         print(f"圖片已儲存至: {output_image_path}")
     else:
         print("無法提取該頁面作為圖片")
+
 
 def download_images_from_url(store: str):
     """爬蟲主程式"""
@@ -120,7 +135,7 @@ def download_images_from_url(store: str):
         url = tag.get('href')
         response = requests.get(url, headers=headers, verify=verify)
         response.raise_for_status()
-        convert_pdf_to_image(response.content, 2,get_output_path(f'{store}.jpg', ''))
+        convert_pdf_to_image(response.content, 2, get_output_path(f'{store}.jpg', ''))
         return None
     elif store == '迷客夏':
         tag = soup.find('div', class_='about_list')
@@ -128,7 +143,7 @@ def download_images_from_url(store: str):
         url = 'https://www.milksha.com/' + tag.get('href')
         response = requests.get(url, headers=headers, verify=verify)
         response.raise_for_status()
-        convert_pdf_to_image(response.content, 1,get_output_path(f'{store}.jpg', ''))
+        convert_pdf_to_image(response.content, 1, get_output_path(f'{store}.jpg', ''))
         return None
     else:
         img_url = get_image_url(store, soup)
@@ -141,12 +156,14 @@ def download_images_from_url(store: str):
         download_image(img_url, filename)
         return None
 
+
 def main():
     parser = argparse.ArgumentParser(description="下載商家圖片")
     parser.add_argument('stores', nargs='+', type=str, help="商家編號清單（可多個）")
     args = parser.parse_args()
     for store in args.stores:
         download_images_from_url(store)
+
 
 if __name__ == '__main__':
     main()

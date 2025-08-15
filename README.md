@@ -6,7 +6,7 @@
 原本想說找機會跟老大說，看看給不給用，但某天我裝個開發工具就被臭了，說什麼資安問題，我覺得我裝的工具已經是相對安全了，又不是從甚麼神奇的地放下載，這樣都不行，真的是在哭。  
 那我這個自己寫的，也不能放到USB放到公司電腦，也是要從github下載，我想8成又會被臭，想想還是算了，SB公司一輩子用紙筆吧。  
   
-由於上班的環境是在工廠，就是一個甚麼都要申請的環境，不然用google excel就可以了，我也不用再寫一個簡陋版的訂飲料了  
+由於上班的環境是在工廠，就是一個甚麼都要申請的環境，不然用google excel就可以了，我也不用再寫一個簡陋版的訂飲料了。本網頁只能訂飲料，都只會顯示當天的飲料而已，不支援顯示查詢歷史紀錄，但可以自己去sql查，我怕那些請飲料的人看到自己請的次數，和花了這麼多錢請這些~~廢物~~會受不了。
 
 ## 技術
 
@@ -36,8 +36,7 @@
 
 3. 進入`src/constants/defaultSetting.js`，這裡面有些基本設定
    - darkMode: 暗黑模式，現在好像沒啥用了，我應該是保設定保存在瀏覽器
-   - disabledMenu: 下拉菜單是否可以用
-   - rootIPAddress: 管理者ipv4，可以修改所有訂單資料，其他人只能改自己的
+   - disabledMenu: 菜單是否可切換
 
 4. 先開啟rethinkDB，再開啟terminal進入本專案輸入指令，這會開啟客戶端和server端程式
 
@@ -53,20 +52,18 @@
 
 | 變數名稱                        | 說明                               |
 | --------------------------- | -------------------------------- |
-| `ROOT_IP_ADDRESS`           | 啟動主機的 IPv4 位址                    |
-| `RETHINKDB_HOST`            | RethinkDB 服務主機名稱，通常是 `rethinkdb` |
+| `RETHINKDB_HOST`            | RethinkDB 服務主機名稱，固定是 `rethinkdb` |
 | `REACT_APP_TITLE`           | 訂飲料頁面標題，例如：XX請喝飲料                |
-| `REACT_APP_STORE_NAME`      | 預設飲料店名稱，會顯示在菜單中                  |
-| `REACT_APP_ROOT_IP_ADDRESS` | 與 `ROOT_IP_ADDRESS` 相同，用於前端配置    |
+| `REACT_APP_STORE_NAME`      | 預設飲料店名稱，預設載入網頁第一個出現的店家                  |
+| `REACT_APP_ROOT_IP_ADDRESS` | 本機電腦的IPv4地址                   |
 
 1. 在專案根目錄建立 `.env` 檔，內容範例如：
 
   ```env
-  ROOT_IP_ADDRESS=192.168.164.142
-  RETHINKDB_HOST=rethinkdb
-  REACT_APP_TITLE=XX請喝飲料，謝謝XX
-  REACT_APP_STORE_NAME=迷客夏
-  REACT_APP_ROOT_IP_ADDRESS=192.168.164.142
+  REACT_APP_TITLE='XX請喝飲料，謝謝XX'
+  REACT_APP_STORE_NAME='迷客夏'
+  REACT_APP_ROOT_IP_ADDRESS='192.168.1.101'
+  RETHINKDB_HOST='rethinkdb'
   ```
 
 2. 確認目錄下有 `docker-compose.yml`，內容示範：
@@ -75,13 +72,15 @@
 version: "3"
 services:
   app:
-    image: gray9527/order-drink:latest
+    build:
+      context: .
+      args:
+        REACT_APP_TITLE: ${REACT_APP_TITLE}
+        REACT_APP_STORE_NAME: ${REACT_APP_STORE_NAME}
+        REACT_APP_ROOT_IP_ADDRESS: ${REACT_APP_ROOT_IP_ADDRESS}
     environment:
-      - ROOT_IP_ADDRESS=${ROOT_IP_ADDRESS}
+      - ROOT_IP_ADDRESS=${REACT_APP_ROOT_IP_ADDRESS}
       - RETHINKDB_HOST=${RETHINKDB_HOST}
-      - REACT_APP_TITLE=${REACT_APP_TITLE}
-      - REACT_APP_STORE_NAME=${REACT_APP_STORE_NAME}
-      - REACT_APP_ROOT_IP_ADDRESS=${REACT_APP_ROOT_IP_ADDRESS}
     ports:
       - "5000:5000"
     depends_on:
@@ -100,7 +99,7 @@ services:
 docker compose up -d
 ```
 
-4. 用瀏覽器開啟 [http://localhost:5000](http://localhost:5000)
+1. 用瀏覽器開啟 [http://localhost:5000](http://localhost:5000)
 
 ### 停止服務
 
@@ -134,6 +133,11 @@ docker compose down
 - 鮮茶道
 - 麻古
 - 龜記
+- 清原
+- 茶湯會
+- 雷的茶
+- 蔗家店
+- 花好月圓
 
 ### 菜單爬蟲
 
@@ -176,6 +180,18 @@ docker compose down
 ### [吾奶王](https://www.facebook.com/wo.milk.king '吾奶王')
 
 不知什麼出現的飲料店，沒有官網，只有FB圖片
+
+### [雷的茶](https://www.facebook.com/photo/?fbid=122099029838788058&set=pb.61573641753788.-2207520000 '雷的茶')
+
+不知什麼出現的飲料店，應該是連鎖店，沒有官網，只有FB圖片
+
+### [蔗家店](https://taiwan.sharelife.tw/article_aid-27007.html '蔗家店')
+
+不知什麼出現的飲料店，應該是連鎖店，沒有官網，只有某個部落圖片
+
+### [福氣塘](https://www.facebook.com/ShiLinhokiTea/ '福氣塘')
+
+不知什麼出現的飲料店，應該是連鎖店，沒有官網，只有FB圖片
 
 ### PDF下載圖片
 

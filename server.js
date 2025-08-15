@@ -43,15 +43,15 @@ async function initializeDatabase () {
       console.log(`✅ Database "${dbName}" 建立成功`);
     }
 
-    // 確認資料表，不存在就建立；存在就先刪掉再建立
+    // 確認資料表，不存在就建立
     const tables = await r.db(dbName).tableList().run(connection);
-    if (tables.includes(tableName)) {
-      await r.db(dbName).tableDrop(tableName).run(connection);
-      console.log(`🧹 Table "${tableName}" 刪除舊表`);
-    }
 
-    await r.db(dbName).tableCreate(tableName, { replicas: 1, shards: 1 }).run(connection);
-    console.log(`✅ Table "${tableName}" 建立成功 (replicas=1, shards=1)`);
+    if (tables.includes(tableName)) {
+      console.log(`ℹ️ Table "${tableName}" 已存在，跳過建立`);
+    } else {
+      await r.db(dbName).tableCreate(tableName, { replicas: 1, shards: 1 }).run(connection);
+      console.log(`✅ Table "${tableName}" 建立成功 (replicas=1, shards=1)`);
+    }
   } catch (error) {
     console.error('初始化資料庫時出錯:', error)
     process.exit(1) // 無法連接資料庫時退出

@@ -7,11 +7,11 @@
     "store": "comebuy",
     "url": "https://www.comebuy2002.com.tw/products-detail/comebuy_menu/"
   },
-    {
+  {
     "store": "teatop",
     "url": "https://www.teatop.com.tw/menu/north-menu/"
   },
-    {
+  {
     "store": "五桐號",
     "url": "https://www.wootea.com/menu/"
   },
@@ -42,5 +42,17 @@
   {
     "store": "麻古",
     "url": "https://www.macutea.com.tw/"
+  },
+  {
+    "store": "清原",
+    "url": "https://www.taroyuan.com/advantage/#menu"
+  },
+  {
+    "store": "花好月圓",
+    "url": "https://www.perfectlife-teashop.com/menu/"
+  },
+  {
+    "store": "茶湯會",
+    "url": "https://tw.tp-tea.com/menu/index.php?index_m1_id=17&index_m2_id=244"
   }
 ]
