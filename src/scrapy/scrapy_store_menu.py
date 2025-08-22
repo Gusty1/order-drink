@@ -76,6 +76,11 @@ def get_image_url(store: str, soup: BeautifulSoup) -> str:
     elif store == '茶湯會':
         tag = soup.find('a', class_='btn01')
         return tag.get('href') if tag else ''
+    elif store == '大茗':
+        tag = soup.find('div', id='intro')
+        tag = tag.find('p')
+        tag = tag.find('img')
+        return tag.get('src') if tag else ''
     return ''
 
 
@@ -160,6 +165,7 @@ def download_images_from_url(store: str):
 def main():
     parser = argparse.ArgumentParser(description="下載商家圖片")
     parser.add_argument('stores', nargs='+', type=str, help="商家編號清單（可多個）")
+    # download_images_from_url('大茗')
     args = parser.parse_args()
     for store in args.stores:
         download_images_from_url(store)
