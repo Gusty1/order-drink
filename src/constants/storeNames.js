@@ -128,6 +128,11 @@ const storeNames = [
     value: '福氣塘',
     label: '福氣塘',
     url: 'https://raw.githubusercontent.com/Gusty1/order-drink/refs/heads/master/src/assets/images/storeMenus/%E7%A6%8F%E6%B0%A3%E5%A1%98.jpg'
+  },
+  {
+    value: '大茗',
+    label: '大茗',
+    url: 'https://raw.githubusercontent.com/Gusty1/order-drink/refs/heads/master/src/assets/images/storeMenus/%E5%A4%A7%E8%8C%97.jpg'
   }
 ]
 
