@@ -82,7 +82,7 @@ const storeNames = [
   {
     value: '阿義',
     label: '阿義',
-    url: 'https://raw.githubusercontent.com/Gusty1/order-drink/refs/heads/master/src/assets/images/storeMenus/%E9%98%BF%E7%BE%A9.jpg'
+    url: 'https://raw.githubusercontent.com/Gusty1/order-drink/refs/heads/master/src/assets/images/storeMenus/%E9%98%BF%E7%BE%A9.png'
   },
   {
     value: '鮮茶道',
@@ -138,6 +138,11 @@ const storeNames = [
     value: 'tea',
     label: 'tea′s原味',
     url: 'https://raw.githubusercontent.com/Gusty1/order-drink/refs/heads/master/src/assets/images/storeMenus/tea.jpg'
+  },
+  {
+    value: '上宇林',
+    label: '上宇林',
+    url: 'https://raw.githubusercontent.com/Gusty1/order-drink/refs/heads/master/src/assets/images/storeMenus/%E4%B8%8A%E5%AE%87%E6%9E%97.png'
   }
 ]
 
