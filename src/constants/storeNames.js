@@ -107,7 +107,7 @@ const storeNames = [
   {
     value: '花好月圓',
     label: '花好月圓',
-    url: 'https://raw.githubusercontent.com/Gusty1/order-drink/refs/heads/master/src/assets/images/storeMenus/%E8%8A%B1%E5%A5%BD%E6%9C%88%E5%9C%93.jpg'
+    url: 'https://raw.githubusercontent.com/Gusty1/order-drink/refs/heads/master/src/assets/images/storeMenus/%E8%8A%B1%E5%A5%BD%E6%9C%88%E5%9C%93.png'
   },
   {
     value: '清原',
@@ -131,8 +131,8 @@ const storeNames = [
   },
   {
     value: '大茗',
-    label: '大茗',
-    url: 'https://raw.githubusercontent.com/Gusty1/order-drink/refs/heads/master/src/assets/images/storeMenus/%E5%A4%A7%E8%8C%97.jpg'
+    label: '大茗本位製茶堂',
+    url: 'https://raw.githubusercontent.com/Gusty1/order-drink/refs/heads/master/src/assets/images/storeMenus/%E5%A4%A7%E8%8C%97.png'
   },
   {
     value: 'tea',
