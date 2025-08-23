@@ -9,6 +9,14 @@ import urllib3
 ## 爬pdf會有警告。所以關閉
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
+# header常數
+DEFAULT_HEADERS = {
+    "User-Agent": (
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+        "AppleWebKit/537.36 (KHTML, like Gecko) "
+        "Chrome/136.0.0.0 Safari/537.36"
+    )
+}
 
 def get_output_path(store, ext):
     """指令圖片匯出目錄，要從根目錄執行才可以 ex: ./src./scrapy/scrapy_store_menu.py"""
@@ -81,19 +89,27 @@ def get_image_url(store: str, soup: BeautifulSoup) -> str:
         tag = tag.find('p')
         tag = tag.find('img')
         return tag.get('src') if tag else ''
+    elif store == '上宇林':
+        tag = soup.find('div', class_='editor_content')
+        tag = tag.find('p')
+        tag = tag.find('img')
+        src = tag.get('src') if tag else ''
+        if src.startswith('.'):
+            src = src[2:]
+        return 'https://www.shangyulin.com.tw/' + src
     return ''
 
 
 def get_file_extension(url: str) -> str:
     """取得圖片檔案的副檔名"""
     ext = os.path.splitext(url.split("?")[0])[1].lower()
-    return ext if ext in ['.jpg', '.jpeg', '.webp'] else '.jpg'
+    return ext if ext in ['.jpg', '.jpeg','.png', '.webp'] else '.jpg'
 
 
 def download_image(img_url: str, save_path: str):
     """下載圖片到指定路徑"""
     try:
-        img_data = requests.get(img_url).content
+        img_data = requests.get(img_url, headers=DEFAULT_HEADERS).content
         with open(save_path, 'wb') as f:
             f.write(img_data)
         print(f'已下載：{save_path}')
@@ -120,14 +136,11 @@ def download_images_from_url(store: str):
     if not store_url:
         print(f'找不到商家 {store} 的網址')
         return None
-    headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36'
-    }
     verify = True
     if store == '可不可' or store == '迷客夏':
         verify = False
     try:
-        response = requests.get(store_url, headers=headers, verify=verify)
+        response = requests.get(store_url, headers=DEFAULT_HEADERS, verify=verify)
         response.raise_for_status()
     except Exception as e:
         print(f'無法連線到 {store_url}：{e}')
@@ -138,7 +151,7 @@ def download_images_from_url(store: str):
         tag = soup.find('div', class_='page-menu__download')
         tag = tag.find('a')
         url = tag.get('href')
-        response = requests.get(url, headers=headers, verify=verify)
+        response = requests.get(url, headers=DEFAULT_HEADERS, verify=verify)
         response.raise_for_status()
         convert_pdf_to_image(response.content, 2, get_output_path(f'{store}.jpg', ''))
         return None
@@ -146,7 +159,7 @@ def download_images_from_url(store: str):
         tag = soup.find('div', class_='about_list')
         tag = tag.find('a')
         url = 'https://www.milksha.com/' + tag.get('href')
-        response = requests.get(url, headers=headers, verify=verify)
+        response = requests.get(url, headers=DEFAULT_HEADERS, verify=verify)
         response.raise_for_status()
         convert_pdf_to_image(response.content, 1, get_output_path(f'{store}.jpg', ''))
         return None
@@ -165,7 +178,7 @@ def download_images_from_url(store: str):
 def main():
     parser = argparse.ArgumentParser(description="下載商家圖片")
     parser.add_argument('stores', nargs='+', type=str, help="商家編號清單（可多個）")
-    # download_images_from_url('大茗')
+    # download_images_from_url('上宇林')
     args = parser.parse_args()
     for store in args.stores:
         download_images_from_url(store)
