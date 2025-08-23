@@ -194,6 +194,10 @@ docker compose down
 
 不知什麼出現的飲料店，應該是連鎖店，沒有官網，只有FB圖片
 
+### [tea′s原味](http://www.teas.com.tw/index.php 'tea′s原味')
+
+感覺應該是規模不小的連鎖店，但我沒印象龍潭有，有官網，但沒有菜單圖片
+
 ### PDF下載圖片
 
 部分店家的菜單是用PDF的，windows要處理pdf還要先裝[poppler](https://github.com/oschwartz10612/poppler-windows 'poppler')，不然不能下載PDF處理後的圖片  

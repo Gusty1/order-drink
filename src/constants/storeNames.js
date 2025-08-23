@@ -133,6 +133,11 @@ const storeNames = [
     value: '大茗',
     label: '大茗',
     url: 'https://raw.githubusercontent.com/Gusty1/order-drink/refs/heads/master/src/assets/images/storeMenus/%E5%A4%A7%E8%8C%97.jpg'
+  },
+  {
+    value: 'tea',
+    label: 'tea′s原味',
+    url: 'https://raw.githubusercontent.com/Gusty1/order-drink/refs/heads/master/src/assets/images/storeMenus/tea.jpg'
   }
 ]
 
