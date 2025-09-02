@@ -163,6 +163,10 @@ docker compose down
 
 有官網，但官網沒有菜單圖片
 
+### [鮮茶道](https://www.chingshin.tw/ '鮮茶道')
+
+有官網，也有圖片，但我不知道是不是跟https有關，他的官網是http不是https，本地測試正常，但是用github action就會變成下載整個網頁
+
 ### [烏弄](https://unocha.com.tw/ '烏弄')
 
 有官網，但沒想到菜單是放在google雲端硬碟，這樣更新的話連結不也是會變

@@ -116,17 +116,7 @@ def get_file_extension(url: str) -> str:
 def download_image(img_url: str, save_path: str):
     """下載圖片到指定路徑"""
     try:
-        if save_path.find('鮮茶道') != -1:
-            img_data = requests.get(img_url, headers={
-                "User-Agent": (
-                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-                    "AppleWebKit/537.36 (KHTML, like Gecko) "
-                    "Chrome/136.0.0.0 Safari/537.36"
-                ),
-                "Referer": "https://www.presotea.com.tw/"
-            }).content
-        else:
-            img_data = requests.get(img_url, headers=DEFAULT_HEADERS).content
+        img_data = requests.get(img_url, headers=DEFAULT_HEADERS).content
         with open(save_path, 'wb') as f:
             f.write(img_data)
         print(f'已下載：{save_path}')
@@ -195,10 +185,11 @@ def download_images_from_url(store: str):
 def main():
     parser = argparse.ArgumentParser(description="下載商家圖片")
     parser.add_argument('stores', nargs='+', type=str, help="商家編號清單（可多個）")
-    # download_images_from_url('鮮茶道')
-    args = parser.parse_args()
-    for store in args.stores:
-        download_images_from_url(store)
+    download_images_from_url('鮮茶道')
+    # download_images_from_url('其他飲料店')
+    # args = parser.parse_args()
+    # for store in args.stores:
+    #     download_images_from_url(store)
 
 
 if __name__ == '__main__':
