@@ -184,10 +184,10 @@ def download_images_from_url(store: str):
 def main():
     parser = argparse.ArgumentParser(description="下載商家圖片")
     parser.add_argument('stores', nargs='+', type=str, help="商家編號清單（可多個）")
-    download_images_from_url('鮮茶道')
-    # args = parser.parse_args()
-    # for store in args.stores:
-    #     download_images_from_url(store)
+    # download_images_from_url('鮮茶道')
+    args = parser.parse_args()
+    for store in args.stores:
+        download_images_from_url(store)
 
 
 if __name__ == '__main__':
