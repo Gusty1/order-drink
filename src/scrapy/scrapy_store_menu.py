@@ -15,9 +15,9 @@ DEFAULT_HEADERS = {
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
         "AppleWebKit/537.36 (KHTML, like Gecko) "
         "Chrome/136.0.0.0 Safari/537.36"
-    ),
-    "Referer": "https://www.presotea.com.tw/"
+    )
 }
+
 
 def get_output_path(store, ext):
     """指令圖片匯出目錄，要從根目錄執行才可以 ex: ./src./scrapy/scrapy_store_menu.py"""
@@ -110,13 +110,23 @@ def get_image_url(store: str, soup: BeautifulSoup) -> str:
 def get_file_extension(url: str) -> str:
     """取得圖片檔案的副檔名"""
     ext = os.path.splitext(url.split("?")[0])[1].lower()
-    return ext if ext in ['.jpg', '.jpeg','.png', '.webp'] else '.jpg'
+    return ext if ext in ['.jpg', '.jpeg', '.png', '.webp'] else '.jpg'
 
 
 def download_image(img_url: str, save_path: str):
     """下載圖片到指定路徑"""
     try:
-        img_data = requests.get(img_url, headers=DEFAULT_HEADERS).content
+        if save_path.find('鮮茶道') != -1:
+            img_data = requests.get(img_url, headers={
+                "User-Agent": (
+                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                    "AppleWebKit/537.36 (KHTML, like Gecko) "
+                    "Chrome/136.0.0.0 Safari/537.36"
+                ),
+                "Referer": "https://www.presotea.com.tw/"
+            }).content
+        else:
+            img_data = requests.get(img_url, headers=DEFAULT_HEADERS).content
         with open(save_path, 'wb') as f:
             f.write(img_data)
         print(f'已下載：{save_path}')
