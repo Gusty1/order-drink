@@ -97,6 +97,12 @@ def get_image_url(store: str, soup: BeautifulSoup) -> str:
         if src.startswith('.'):
             src = src[2:]
         return 'https://www.shangyulin.com.tw/' + src
+    elif store == '鮮茶道':
+        tag = soup.find('a', id='menu_img_url')
+        src = tag.get('href') if tag else ''
+        if src.startswith('.'):
+            src = src[2:]
+        return 'http://www.presotea.com.tw/' + src
     return ''
 
 
@@ -178,7 +184,7 @@ def download_images_from_url(store: str):
 def main():
     parser = argparse.ArgumentParser(description="下載商家圖片")
     parser.add_argument('stores', nargs='+', type=str, help="商家編號清單（可多個）")
-    # download_images_from_url('上宇林')
+    # download_images_from_url('鮮茶道')
     args = parser.parse_args()
     for store in args.stores:
         download_images_from_url(store)
