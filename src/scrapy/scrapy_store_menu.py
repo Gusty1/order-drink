@@ -15,7 +15,8 @@ DEFAULT_HEADERS = {
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
         "AppleWebKit/537.36 (KHTML, like Gecko) "
         "Chrome/136.0.0.0 Safari/537.36"
-    )
+    ),
+    "Referer": "https://www.presotea.com.tw/"
 }
 
 def get_output_path(store, ext):
@@ -102,7 +103,7 @@ def get_image_url(store: str, soup: BeautifulSoup) -> str:
         src = tag.get('href') if tag else ''
         if src.startswith('.'):
             src = src[2:]
-        return 'https://www.presotea.com.tw/' + src
+        return 'http://www.presotea.com.tw/' + src
     return ''
 
 
@@ -115,7 +116,7 @@ def get_file_extension(url: str) -> str:
 def download_image(img_url: str, save_path: str):
     """下載圖片到指定路徑"""
     try:
-        img_data = requests.get(img_url, headers=DEFAULT_HEADERS,verify=False).content
+        img_data = requests.get(img_url, headers=DEFAULT_HEADERS).content
         with open(save_path, 'wb') as f:
             f.write(img_data)
         print(f'已下載：{save_path}')
