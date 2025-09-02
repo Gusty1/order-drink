@@ -185,6 +185,7 @@ def download_images_from_url(store: str):
 def main():
     parser = argparse.ArgumentParser(description="下載商家圖片")
     parser.add_argument('stores', nargs='+', type=str, help="商家編號清單（可多個）")
+    # 不知為啥鮮茶道本地跑就可以，用github action就不行
     # download_images_from_url('鮮茶道')
     # download_images_from_url('其他飲料店')
     args = parser.parse_args()
