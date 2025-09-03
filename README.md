@@ -157,7 +157,7 @@ docker compose down
 
 ### [德正](https://dejeng.com/ '德正')
 
-官網做得很漂亮，但沒有菜單圖片阿，這樣再漂亮有G8用，這個連結是某個部落格的
+官網做得很漂亮，但沒有菜單圖片阿，這樣再漂亮有G8用
 
 ### [清心](https://www.chingshin.tw/ '清新')
 
