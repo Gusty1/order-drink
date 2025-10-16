@@ -1,8 +1,11 @@
 import axios from 'axios'
+import { getEnv } from '../../utils/env' 
+
+const env = getEnv()
 
 // 創建一個 axios 實例
 const axiosClient = axios.create({
-  baseURL: `http://${process.env.REACT_APP_ROOT_IP_ADDRESS}:5000/`,
+  baseURL: `http://${env.REACT_APP_ROOT_IP_ADDRESS}:5000/`,
   timeout: 3000 // 設置請求超時時間
 })
 

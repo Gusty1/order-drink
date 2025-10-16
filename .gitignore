@@ -455,5 +455,7 @@ sketch
 .history
 .ionide
 
+rethinkdb_data/
+
 *~
 # End of https://www.toptal.com/developers/gitignore/api/python,pycharm,visualstudiocode,react,node

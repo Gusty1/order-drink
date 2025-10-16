@@ -8,6 +8,8 @@
   
 由於上班的環境是在工廠，就是一個甚麼都要申請的環境，不然用google excel就可以了，我也不用再寫一個簡陋版的訂飲料了。本網頁只能訂飲料，都只會顯示當天的飲料而已，不支援顯示查詢歷史紀錄，但可以自己去資料庫查，我怕那些請飲料的人看到自己請的次數，和花了這麼多錢請這些~~廢物~~會受不了。
 
+本專案只適合類似公司、工廠那樣，大家都在同一個網路環境下才可以用
+
 ## 技術
 
 一切都是在本地運行，使用`rethinkDB`是因為它可以監聽資料庫變化，然後用`socket.io`，傳送消息到前端顯示
@@ -25,7 +27,7 @@
 
 ## 使用說明
 
-本專案只適合類似公司、工廠那樣，大家都在同一個網路環境下才可以用
+最初的開發、測試方法被我改成docker以後好像就不能這樣用了，如果可以希望大家都用docker...
 
 1. 先安裝[rethinkDB](https://rethinkdb.com/ 'rethinkDB')，預設安裝即可，也可以用docker裝
 2. 下載本專案，然後執行
@@ -46,31 +48,53 @@
 
 ## Docker說明
 
-對docker沒有很熟，可能會有問題...
+對docker沒有很熟，可能會有問題...  
 
-### 環境變數說明
+1. pull 專案
+
+```terminal
+docker pull gray9527/order-drink-app:latest
+```
+
+2. 在任一錄建立 `.env` 檔，以下是範例：
+
+ 環境變數說明
 
 | 變數名稱                        | 說明                               |
 | --------------------------- | -------------------------------- |
 | `RETHINKDB_HOST`            | RethinkDB 服務主機名稱，固定是 `rethinkdb` |
 | `REACT_APP_TITLE`           | 訂飲料頁面標題，例如：XX請喝飲料                |
-| `REACT_APP_STORE_NAME`      | 預設飲料店名稱，預設載入網頁第一個出現的店家                  |
+| `REACT_APP_STORE_NAME`      | 預設飲料店名稱，預設載入網頁第一個出現的店家，名稱請參考下方列出的飲料店名稱的                  |
 | `REACT_APP_ROOT_IP_ADDRESS` | 本機電腦的IPv4地址                   |
 
-1. 在專案根目錄建立 `.env` 檔，內容範例如：
+**可用飲料店名稱:** 19 , comebuy , teatop , 五桐號 , 可不可 , 大苑子 , 珍煮丹 , 萬波 , 迷客夏 , 阿義 , 麻古 , 清原 , 花好月圓 , 茶湯會 , 大茗 , 上宇林 , 鮮茶道
 
-  ```env
-  REACT_APP_TITLE='XX請喝飲料，謝謝XX'
-  REACT_APP_STORE_NAME='迷客夏'
-  REACT_APP_ROOT_IP_ADDRESS='192.168.1.101'
-  RETHINKDB_HOST='rethinkdb'
-  ```
+```env
+REACT_APP_TITLE='XX請喝飲料，謝謝XX'
+REACT_APP_STORE_NAME='迷客夏'
+REACT_APP_ROOT_IP_ADDRESS='192.168.1.101'
+RETHINKDB_HOST='rethinkdb' #這個固定
+```
 
-2. 確認目錄下有 `docker-compose.yml`，內容示範：
+1. 在同一目錄下建立 `docker-compose.yml`，把下面的內容貼上
 
 ```yaml
-version: "3"
+version: "3.9"
 services:
+  rethinkdb:
+    image: rethinkdb:latest
+    container_name: rethinkdb
+    volumes:
+      - ./rethinkdb-data:/data
+    ports:
+      - "8080:8080"
+      - "28015:28015"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080"]  # RethinkDB web UI ready
+      interval: 2s
+      retries: 20
+      start_period: 5s
+
   app:
     build:
       context: .
@@ -78,33 +102,38 @@ services:
         REACT_APP_TITLE: ${REACT_APP_TITLE}
         REACT_APP_STORE_NAME: ${REACT_APP_STORE_NAME}
         REACT_APP_ROOT_IP_ADDRESS: ${REACT_APP_ROOT_IP_ADDRESS}
+    image: gray9527/order-drink-app:latest
+    container_name: order-drink-app
     environment:
+      # 後端用
       - ROOT_IP_ADDRESS=${REACT_APP_ROOT_IP_ADDRESS}
       - RETHINKDB_HOST=${RETHINKDB_HOST}
+      # 前端動態 env 用
+      - REACT_APP_TITLE=${REACT_APP_TITLE}
+      - REACT_APP_STORE_NAME=${REACT_APP_STORE_NAME}
+      - REACT_APP_ROOT_IP_ADDRESS=${REACT_APP_ROOT_IP_ADDRESS}
     ports:
       - "5000:5000"
     depends_on:
-      - rethinkdb
-
-  rethinkdb:
-    image: rethinkdb:latest
-    ports:
-      - "8080:8080"
-      - "28015:28015"
+      rethinkdb:
+        condition: service_healthy
 ```
 
-3. 執行指令啟動服務：
+4. 執行指令啟動服務：
 
 ```bash
-docker compose up -d
+docker compose up -d # 這會把服務另開，不會占用當前窗口
+docker compose up # 用當前窗口開啟服務
 ```
 
-1. 用瀏覽器開啟 [http://localhost:5000](http://localhost:5000)
+5. 用瀏覽器開啟 [http://localhost:5000](http://localhost:5000)
+   可以把localhost換成你的ipv4
 
 ### 停止服務
 
 ```bash
-docker compose down
+docker compose down # 這會刪除容器
+docker compose stop # 這會停止服務
 ```
 
 ## 菜單

@@ -3,20 +3,22 @@ import FoodMenu from './FoodMenu/FoodMenu'
 import OrderForm from './OrderForm/OrderForm'
 import OrderTable from './OrderTable/OrderTable'
 import { settingStore } from '../../stores'
+import { getEnv } from '../../utils/env' 
 import './MyContent.css'
 
 const MyContent = ({ messageApi }) => {
   const { Content } = Layout
   const { setting } = settingStore()
   const bgColor = setting.darkMode ? 'white' : 'black'
+  const env = getEnv()
 
   return (
     <Content className="contentContainer">
       <div className="content">
-        <div className="titleContainer">{process.env.REACT_APP_TITLE}</div>
+        <div className="titleContainer">{env.REACT_APP_TITLE}</div>
         <div style={{ display: 'flex', gap: 10, maxHeight: '55vh', overflow: 'hidden' }}>
           <div style={{ flex: 1 }}>
-            <FoodMenu storeName={process.env.REACT_APP_STORE_NAME} />
+            <FoodMenu storeName={env.REACT_APP_STORE_NAME} />
           </div>
           <div style={{ flex: 1 }}>
             <OrderForm messageApi={messageApi} />
