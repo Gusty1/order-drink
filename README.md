@@ -27,7 +27,7 @@
 
 ## 使用說明
 
-最初的開發、測試方法被我改成docker以後好像就不能這樣用了，如果可以希望大家都用docker...
+最初的開發、測試方法被我改成docker以後好像就不能這樣用了...
 
 1. 先安裝[rethinkDB](https://rethinkdb.com/ 'rethinkDB')，預設安裝即可，也可以用docker裝
 2. 下載本專案，然後執行
