@@ -10,6 +10,12 @@
 
 本專案只適合類似公司、工廠那樣，大家都在同一個網路環境下才可以用
 
+## 程式截圖
+
+![orderDrink1](./images/orderDrink1.png)
+![orderDrink2](./images/orderDrink2.png)
+![orderDrink3](./images/orderDrink3.png)
+
 ## 技術
 
 一切都是在本地運行，使用`rethinkDB`是因為它可以監聽資料庫變化，然後用`socket.io`，傳送消息到前端顯示
@@ -24,27 +30,6 @@
 - [x] 打包成docker(介於可行和不可行之間)
 - [ ] 可以跟訂飲料的網站連結，一鍵下訂。
   - 靠杯一下某個訂飲料的網站換個分店而已，訂購資料全都要重打什麼大便，氣氣氣~
-
-## 使用說明
-
-最初的開發、測試方法被我改成docker以後好像就不能這樣用了...
-
-1. 先安裝[rethinkDB](https://rethinkdb.com/ 'rethinkDB')，預設安裝即可，也可以用docker裝
-2. 下載本專案，然後執行
-
- ```terminal
- npm i 
- ```
-
-3. 進入`src/constants/defaultSetting.js`，這裡面有些基本設定
-   - darkMode: 暗黑模式，現在好像沒啥用了，我應該是保設定保存在瀏覽器
-   - disabledMenu: 菜單是否可切換
-
-4. 先開啟rethinkDB，再開啟terminal進入本專案輸入指令，這會開啟客戶端和server端程式
-
- ```terminal
- npm start
- ```
 
 ## Docker說明
 
