@@ -33,8 +33,6 @@
 
 ## Docker說明
 
-對docker沒有很熟，可能會有問題...  
-
 1. pull 專案
 
 ```terminal
