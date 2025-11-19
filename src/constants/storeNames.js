@@ -143,6 +143,11 @@ const storeNames = [
     value: '上宇林',
     label: '上宇林',
     url: 'https://raw.githubusercontent.com/Gusty1/order-drink/refs/heads/master/src/assets/images/storeMenus/%E4%B8%8A%E5%AE%87%E6%9E%97.png'
+  },
+  {
+    value: '茶可斯',
+    label: '茶可斯',
+    url: 'https://raw.githubusercontent.com/Gusty1/order-drink/refs/heads/master/src/assets/images/storeMenus/%E8%8C%B6%E5%8F%AF%E6%96%AF.jpg'
   }
 ]
 

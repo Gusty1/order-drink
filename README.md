@@ -31,13 +31,7 @@
 
 ## Docker說明
 
-1. pull 專案
-
-```terminal
-docker pull gray9527/order-drink-app:latest
-```
-
-2. 在任一錄建立 `.env` 檔，以下是範例：
+1. 在任一錄建立 `.env` 檔，以下是範例：
 
  環境變數說明
 
@@ -108,7 +102,7 @@ docker compose up # 用當前窗口開啟服務
 ```
 
 5. 用瀏覽器開啟 [http://localhost:5000](http://localhost:5000)
-   可以把localhost換成你的ipv4
+   可以把localhost換成你的`ip`或`電腦名稱`
 
 ### 停止服務
 
@@ -218,3 +212,22 @@ docker compose stop # 這會停止服務
 
 - 可不可: 他們網站有擋什麼verify驗證，還我要多做一些事
 - 迷客夏: 跟`可不可`比好一點，~~但還是SB~~
+
+## 我測試用
+
+- 修改後測試
+
+```terminal
+docker compose build
+docker compose up -d
+docker compose down
+```
+
+- 上傳docker hub
+
+```terminal
+# 重新打包image
+docker build -t gray9527/order-drink-app:latest .
+# 上傳
+docker push gray9527/order-drink-app:latest
+```
