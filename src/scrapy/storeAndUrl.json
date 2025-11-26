@@ -66,5 +66,9 @@
   {
     "store": "鮮茶道",
     "url": "http://www.presotea.com.tw/menu.php"
+  },
+  {
+    "store": "吳家",
+    "url": "https://www.wujiatea.com.tw/"
   }
 ]

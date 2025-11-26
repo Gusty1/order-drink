@@ -104,6 +104,11 @@ def get_image_url(store: str, soup: BeautifulSoup) -> str:
         if src.startswith('.'):
             src = src[2:]
         return 'http://www.presotea.com.tw/' + src
+    elif store == '吳家':
+        tag = soup.find('li', id='section-f_4cb060a0-3820-4739-ad05-b4cf6edaa6da')
+        tag = tag.find('img')
+        src = 'https:' + tag.get('data-src') if tag else ''
+        return src
     return ''
 
 
