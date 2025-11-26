@@ -144,6 +144,8 @@ docker compose stop # 這會停止服務
 - 蔗家店
 - 花好月圓
 - 大茗本位製茶堂
+- 茶可斯
+- 吳家紅茶冰
 
 ### 菜單爬蟲
 
@@ -202,6 +204,10 @@ docker compose stop # 這會停止服務
 ### [tea′s原味](http://www.teas.com.tw/index.php 'tea′s原味')
 
 感覺應該是規模不小的連鎖店，但我沒印象龍潭有，有官網，但沒有菜單圖片
+
+### [茶可斯](https://order.didieats.com.tw/store/teacos '茶可斯')
+
+聽都沒聽過，看來又是新的飲料店
 
 ### PDF下載圖片
 
