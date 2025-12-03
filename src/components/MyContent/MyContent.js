@@ -3,7 +3,7 @@ import FoodMenu from './FoodMenu/FoodMenu'
 import OrderForm from './OrderForm/OrderForm'
 import OrderTable from './OrderTable/OrderTable'
 import { settingStore } from '../../stores'
-import { getEnv } from '../../utils/env' 
+import { getEnv } from '../../utils/env'
 import './MyContent.css'
 
 const MyContent = ({ messageApi }) => {
@@ -16,7 +16,7 @@ const MyContent = ({ messageApi }) => {
     <Content className="contentContainer">
       <div className="content">
         <div className="titleContainer">{env.REACT_APP_TITLE}</div>
-        <div style={{ display: 'flex', gap: 10, maxHeight: '55vh', overflow: 'hidden' }}>
+        <div style={{ display: 'flex', gap: 10 }}>
           <div style={{ flex: 1 }}>
             <FoodMenu storeName={env.REACT_APP_STORE_NAME} />
           </div>

@@ -26,7 +26,6 @@ const FoodMenu = ({ storeName }) => {
       />
       <Image
         width="100%"
-        height="100%"
         src={storeNames.find((item) => item.value === storeMenu).url}
         style={{
           objectFit: 'contain'
