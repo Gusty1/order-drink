@@ -1,9 +1,11 @@
 import { useState } from 'react'
 import { Image, Select } from 'antd'
-import { storeNames, defaultSetting } from '../../../constants'
+import { storeNames } from '../../../constants'
+import { getEnv } from '../../../utils/env'
 
 const FoodMenu = ({ storeName }) => {
   const [storeMenu, setStoreMenu] = useState(null)
+  const env = getEnv()
 
   useState(() => {
     setStoreMenu(storeName)
@@ -22,7 +24,7 @@ const FoodMenu = ({ storeName }) => {
         style={{ marginBottom: 10, width: '100%' }}
         onChange={(menu) => changeMenu(menu)}
         options={storeNames}
-        disabled={defaultSetting.disabledMenu}
+        disabled={env.REACT_APP_DISABLED_MENU}
       />
       <Image
         width="100%"

@@ -53,7 +53,7 @@ const OrderForm = ({ messageApi }) => {
       onFinish={(data) => sendForm(data)}
     >
       <Form.Item
-        label="姓名"
+        label="稱呼"
         name="username"
         rules={[
           {
@@ -117,11 +117,29 @@ const OrderForm = ({ messageApi }) => {
         </Radio.Group>
       </Form.Item>
 
-      <Form.Item label="數量" name="count" initialValue={1}>
+      <Form.Item
+        label="數量"
+        name="count"
+        initialValue={1}
+        rules={[
+          {
+            required: true,
+            message: '必須輸入!!!'
+          }
+        ]}>
         <Input type="number" />
       </Form.Item>
 
-      <Form.Item label="價格" name="price" initialValue="">
+      <Form.Item
+        label="價格"
+        name="price"
+        initialValue=""
+        rules={[
+          {
+            required: true,
+            message: '必須輸入!!!'
+          }
+        ]}>
         <Input type="number" />
       </Form.Item>
 
@@ -134,9 +152,9 @@ const OrderForm = ({ messageApi }) => {
           type="default"
           htmlType="button"
           icon={<CloseOutlined />}
-          iconPosition="start"
+          iconPlacement="start"
           color="gold"
-          style={{ marginRight: '10px',display: orderID ? 'inline' : 'none' }}
+          style={{ marginRight: '10px', display: orderID ? 'inline' : 'none' }}
           onClick={() => resetOrder()}
         >
           取消
@@ -145,7 +163,7 @@ const OrderForm = ({ messageApi }) => {
           type="primary"
           htmlType="submit"
           icon={<SendOutlined />}
-          iconPosition="start"
+          iconPlacement="start"
           disabled={sending}
         >
           送出

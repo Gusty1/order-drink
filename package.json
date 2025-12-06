@@ -4,33 +4,29 @@
   "private": true,
   "dependencies": {
     "ajv": "^8.17.1",
-    "antd": "^5.23.2",
-    "axios": "^1.7.9",
+    "antd": "^6.0.1",
+    "axios": "^1.13.2",
     "cors": "^2.8.5",
-    "dotenv": "^16.5.0",
-    "express": "^4.21.2",
-    "nanoid": "^5.0.9",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
+    "dotenv": "^17.2.3",
+    "express": "^5.2.1",
+    "nanoid": "^5.1.6",
+    "react": "^19.2.1",
+    "react-dom": "^19.2.1",
     "react-scripts": "5.0.1",
     "rethinkdb": "^2.4.2",
     "socket.io": "^4.8.1",
     "socket.io-client": "^4.8.1",
-    "zustand": "^5.0.3"
+    "zustand": "^5.0.9"
   },
   "scripts": {
     "start": "concurrently \"npm run server\" \"npm run client\"",
     "client": "react-scripts start",
-    "server": "npx nodemon server.js",
+    "server": "nodemon server.js",
     "build": "react-scripts build",
-    "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
+    "extends": ["react-app"]
   },
   "browserslist": {
     "production": [
@@ -45,17 +41,12 @@
     ]
   },
   "devDependencies": {
-    "@babel/core": "^7.26.0",
-    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
-    "@babel/preset-env": "^7.26.0",
-    "@babel/preset-react": "^7.26.3",
-    "@eslint/js": "^9.18.0",
-    "concurrently": "^9.1.2",
-    "eslint": "^9.18.0",
-    "eslint-config-prettier": "^10.0.1",
-    "eslint-plugin-react": "^7.37.4",
-    "globals": "^15.14.0",
-    "nodemon": "^3.1.9",
-    "prettier": "^3.4.2"
+    "concurrently": "^9.2.1",
+    "nodemon": "^3.1.11",
+    "eslint": "^8.48.0",
+    "eslint-config-react-app": "^7.0.1",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-react": "^7.37.5",
+    "prettier": "^3.7.4"
   }
 }

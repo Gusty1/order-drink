@@ -17,12 +17,12 @@ const OrderTable = ({ messageApi }) => {
 
   const columns = [
     {
-      title: '姓名',
+      title: '稱呼',
       dataIndex: 'username',
       key: 'username'
     },
     {
-      title: '飲料',
+      title: '飲品',
       dataIndex: 'drink',
       key: 'drink'
     },

@@ -17,7 +17,8 @@ const io = socketIo(server, {
     origin: '*' // 設定允許的跨域來源
   }
 })
-const dbConfig = { host: process.env.RETHINKDB_HOST, port: 28015 }
+const dbConfig = { host: 'rethinkdb', port: 28015 }//docker用這邊的
+// const dbConfig = { host: '10.232.107.142', port: 28015 }//本地測試調整這邊
 
 let connection = null
 const dbName = 'order_drink'
@@ -235,8 +236,8 @@ app.get('/userIP', (req, res) => {
 app.use(express.static(path.join(__dirname, "build")));
 
 // 最後面加這行處理所有未命中路由給前端
-app.get("*", (req, res) => {
-  res.sendFile(path.resolve(__dirname, "build", "index.html"));
+app.get(/.*/, (req, res) => {
+  res.sendFile(path.join(__dirname, 'build', 'index.html'));
 });
 
 /**

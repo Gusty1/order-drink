@@ -22,6 +22,14 @@
 - 消息: zustand、socket.io
 - 資料存儲: rethinkDB
 
+## 說明
+
+我最初的想法是根據各自電腦的IP，會在localstorage儲存一個新的uuid，但如果ip是部屬的電腦或是指定的IP，就是管理員，會儲存root，可以修改別人的訂單資料。
+
+這在本地開發是可行的，但我沒想到放在docker會因為網路問題，所以不行，但還是可以手動調整瀏覽器的localstorage，把它改成root就有一樣的效果了
+
+看來以後如果要部屬到docker跟網路相關的東西都要注意一下
+
 ## TODO(做不到但又想做的事)
 
 - [x] 自動爬取最新菜單，目前都需要手動更換(部分有官網的店家可以做到)
@@ -29,44 +37,49 @@
 - [ ] 可以跟訂飲料的網站連結，一鍵下訂。
   - 靠杯一下某個訂飲料的網站換個分店而已，訂購資料全都要重打什麼大便，氣氣氣~
 
+## 本地啟動
+
+1. clone本專案，然後執行`npm i`
+2. 調整public裡面的env.js
+3. 調整server.js裡面的這一段程式，換成自己的ip
+
+   ```js
+   const dbConfig = { host: process.env.RETHINKDB_HOST, port: 28015 }
+   ```
+
+4. 自己去安裝rethinkDB，用預設設定就好，然後啟動
+5. 執行`npm start`
+
 ## Docker說明
 
-1. 在任一目錄建立 `.env` 檔，以下是範例：
+1. 在任一目錄建立 `.env` 檔，以下是說明
 
  環境變數說明
 
 | 變數名稱                        | 說明                               |
 | --------------------------- | -------------------------------- |
-| `RETHINKDB_HOST`            | RethinkDB 服務主機名稱，固定是 `rethinkdb` |
-| `REACT_APP_TITLE`           | 訂飲料頁面標題，例如：XX請喝飲料                |
-| `REACT_APP_STORE_NAME`      | 預設飲料店名稱，預設載入網頁第一個出現的店家，名稱請參考下方列出的飲料店名稱的                  |
-| `REACT_APP_ROOT_IP_ADDRESS` | 本機電腦的IPv4地址                   |
-
-**可用飲料店名稱:** 請看下面的[支援的店家](#支援的店家)
-
-```env
-REACT_APP_TITLE='XX請喝飲料，謝謝XX'
-REACT_APP_STORE_NAME='迷客夏'
-REACT_APP_ROOT_IP_ADDRESS='192.168.1.101'
-RETHINKDB_HOST='rethinkdb' #這個固定
-```
+| **RETHINKDB_HOST**            | RethinkDB 服務主機名稱，固定是 `rethinkdb` |
+| **REACT_APP_TITLE**           | 訂飲料頁面標題，例如：XX請喝飲料                |
+| **REACT_APP_STORE_NAME**      | 預設飲料店名稱，一定要寫，可以先寫迷客夏，可用飲料店名稱請看下面的[支援的店家](#支援的店家)                  |
+| **REACT_APP_ROOT_IP_ADDRESS** | 本機電腦的IPv4地址                   |
+| **REACT_APP_REAL_ROOT_IP_ADDRESS** | 如果管理著的電腦不是部屬的電腦，這邊寫要當管理著的IP(docker不可行，只能手動修改localstorage)                  |
+| **REACT_APP_DISABLED_MENU** | 設定菜單是否可以切換，注意要字串`true`(禁用)或`false`(啟用)                   |
 
 1. 在同一目錄下建立 `docker-compose.yml`，把下面的內容貼上
 
 ```yaml
-version: "3.9"
 services:
   rethinkdb:
     image: rethinkdb:latest
-    container_name: rethinkdb
+    container_name: rethinkdb-order-drink
     volumes:
       - ./rethinkdb-data:/data
     ports:
       - "8080:8080"
       - "28015:28015"
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080"]  # RethinkDB web UI ready
-      interval: 2s
+      test: ["CMD-SHELL", "curl -f http://localhost:8080 || exit 1"]
+      interval: 5s
       retries: 20
       start_period: 5s
 
@@ -77,16 +90,17 @@ services:
         REACT_APP_TITLE: ${REACT_APP_TITLE}
         REACT_APP_STORE_NAME: ${REACT_APP_STORE_NAME}
         REACT_APP_ROOT_IP_ADDRESS: ${REACT_APP_ROOT_IP_ADDRESS}
-    image: gray9527/order-drink-app:latest
+        REACT_APP_REAL_ROOT_IP_ADDRESS: ${REACT_APP_REAL_ROOT_IP_ADDRESS}
+        REACT_APP_DISABLED_MENU: ${REACT_APP_DISABLED_MENU}
+    image: gray9527/order-drink-app:latest # 若本地測試可註解掉
     container_name: order-drink-app
     environment:
-      # 後端用
       - ROOT_IP_ADDRESS=${REACT_APP_ROOT_IP_ADDRESS}
-      - RETHINKDB_HOST=${RETHINKDB_HOST}
-      # 前端動態 env 用
       - REACT_APP_TITLE=${REACT_APP_TITLE}
       - REACT_APP_STORE_NAME=${REACT_APP_STORE_NAME}
       - REACT_APP_ROOT_IP_ADDRESS=${REACT_APP_ROOT_IP_ADDRESS}
+      - REACT_APP_REAL_ROOT_IP_ADDRESS=${REACT_APP_REAL_ROOT_IP_ADDRESS}
+      - REACT_APP_DISABLED_MENU=${REACT_APP_DISABLED_MENU}
     ports:
       - "5000:5000"
     depends_on:
@@ -118,7 +132,7 @@ docker compose stop # 這會停止服務
 平常我很少買飲料，不知什麼時候開始有這麼多飲料店...
 以`桃園市龍潭區`的飲料店為主，目前的店家有:  
 
-- 19茶屋
+- 19(19茶屋)
 - 50嵐
 - coco
 - comebuy
@@ -143,7 +157,10 @@ docker compose stop # 這會停止服務
 - 雷的茶
 - 蔗家店
 - 花好月圓
-- 大茗本位製茶堂
+- 福氣塘
+- 大茗(大茗本位製茶堂)
+- tea(tea′s原味)
+- 上宇林
 - 茶可斯
 - 吳家紅茶冰
 
@@ -165,7 +182,7 @@ docker compose stop # 這會停止服務
 
 官網做得很漂亮，但沒有菜單圖片阿，這樣再漂亮有G8用
 
-### [清心](https://www.chingshin.tw/ '清新')
+### [清心](https://www.chingshin.tw/ '清心')
 
 有官網，但官網沒有菜單圖片
 
@@ -207,7 +224,7 @@ docker compose stop # 這會停止服務
 
 ### [茶可斯](https://order.didieats.com.tw/store/teacos '茶可斯')
 
-聽都沒聽過，看來又是新的飲料店
+聽都沒聽過，又是新的飲料店
 
 ### PDF下載圖片
 

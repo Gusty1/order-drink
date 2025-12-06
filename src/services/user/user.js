@@ -7,7 +7,7 @@ export const setUser = async () => {
   const drinkUser = localStorage.getItem('drinkUser')
   if (!drinkUser) {
     const { data } = await axiosClient.get('userIP')
-    if (data?.address === env.REACT_APP_ROOT_IP_ADDRESS) {
+    if (data?.address === env.REACT_APP_REAL_ROOT_IP_ADDRESS) {
       localStorage.setItem('drinkUser', JSON.stringify({ drinkUser: 'root' }))
     } else {
       const userID = nanoid()

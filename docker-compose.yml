@@ -1,16 +1,15 @@
-version: "3.9"
 services:
   rethinkdb:
     image: rethinkdb:latest
-    container_name: rethinkdb
+    container_name: rethinkdb-order-drink
     volumes:
       - ./rethinkdb-data:/data
     ports:
       - "8080:8080"
       - "28015:28015"
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080"]  # RethinkDB web UI ready
-      interval: 2s
+      test: ["CMD-SHELL", "curl -f http://localhost:8080 || exit 1"]
+      interval: 5s
       retries: 20
       start_period: 5s
 
@@ -21,16 +20,17 @@ services:
         REACT_APP_TITLE: ${REACT_APP_TITLE}
         REACT_APP_STORE_NAME: ${REACT_APP_STORE_NAME}
         REACT_APP_ROOT_IP_ADDRESS: ${REACT_APP_ROOT_IP_ADDRESS}
-    image: gray9527/order-drink-app:latest # 本地測試把這行註解掉
+        REACT_APP_REAL_ROOT_IP_ADDRESS: ${REACT_APP_REAL_ROOT_IP_ADDRESS}
+        REACT_APP_DISABLED_MENU: ${REACT_APP_DISABLED_MENU}
+    image: gray9527/order-drink-app:latest # 若本地測試可註解掉
     container_name: order-drink-app
     environment:
-      # 後端用
       - ROOT_IP_ADDRESS=${REACT_APP_ROOT_IP_ADDRESS}
-      - RETHINKDB_HOST=${RETHINKDB_HOST}
-      # 前端動態 env 用
       - REACT_APP_TITLE=${REACT_APP_TITLE}
       - REACT_APP_STORE_NAME=${REACT_APP_STORE_NAME}
       - REACT_APP_ROOT_IP_ADDRESS=${REACT_APP_ROOT_IP_ADDRESS}
+      - REACT_APP_REAL_ROOT_IP_ADDRESS=${REACT_APP_REAL_ROOT_IP_ADDRESS}
+      - REACT_APP_DISABLED_MENU=${REACT_APP_DISABLED_MENU}
     ports:
       - "5000:5000"
     depends_on:
