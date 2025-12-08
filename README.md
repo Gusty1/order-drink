@@ -24,7 +24,7 @@
 
 ## 說明
 
-我最初的想法是根據各自電腦的IP，會在localstorage儲存一個新的uuid，但如果ip是部屬的電腦或是指定的IP，就是管理員，會儲存root，可以修改別人的訂單資料。
+我最初的想法是根據各自電腦的IP，會在localstorage儲存一個uuid，但如果ip是部屬的電腦或是指定的IP，就是管理員，會儲存root，可以修改別人的訂單資料。
 
 這在本地開發是可行的，但我沒想到放在docker會因為網路問題，所以不行，但還是可以手動調整瀏覽器的localstorage，把它改成root就有一樣的效果了
 
@@ -114,8 +114,7 @@ docker compose up -d # 這會把服務另開，不會占用當前窗口
 docker compose up # 用當前窗口開啟服務
 ```
 
-5. 用瀏覽器開啟 [http://localhost:5000](http://localhost:5000)
-   可以把localhost換成你的`ip`或`電腦名稱`
+5. 用瀏覽器開啟 [http://localhost:5000](http://localhost:5000)，可以把localhost換成你的`ip`或`電腦名稱`
 
 ### 停止服務
 
@@ -249,7 +248,7 @@ docker compose down
 
 ```terminal
 # 重新打包image
-docker build -t gray9527/order-drink-app:latest .
+docker build --no-cache -t gray9527/order-drink-app:latest .
 # 上傳
 docker push gray9527/order-drink-app:latest
 ```

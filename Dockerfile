@@ -11,10 +11,8 @@ COPY package*.json ./
 # 安裝所有依賴（包含 devDependencies）
 RUN npm install
 
-# 分別複製前端源碼資料夾，避免 COPY . . 被 cache 誤判
-COPY public ./public
-COPY src ./src
-COPY .env ./
+# 複製源碼
+COPY . .
 
 # build-time ARG
 ARG REACT_APP_TITLE
