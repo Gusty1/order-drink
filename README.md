@@ -58,14 +58,13 @@
 
 | 變數名稱                        | 說明                               |
 | --------------------------- | -------------------------------- |
-| **RETHINKDB_HOST**            | RethinkDB 服務主機名稱，固定是 `rethinkdb` |
 | **REACT_APP_TITLE**           | 訂飲料頁面標題，例如：XX請喝飲料                |
 | **REACT_APP_STORE_NAME**      | 預設飲料店名稱，一定要寫，可以先寫迷客夏，可用飲料店名稱請看下面的[支援的店家](#支援的店家)                  |
-| **REACT_APP_ROOT_IP_ADDRESS** | 本機電腦的IPv4地址                   |
+| **REACT_APP_ROOT_IP_ADDRESS** | 部屬電腦的IP                   |
 | **REACT_APP_REAL_ROOT_IP_ADDRESS** | 如果管理著的電腦不是部屬的電腦，這邊寫要當管理著的IP(docker不可行，只能手動修改localstorage)                  |
-| **REACT_APP_DISABLED_MENU** | 設定菜單是否可以切換，注意要字串`true`(禁用)或`false`(啟用)                   |
+| **REACT_APP_DISABLED_MENU** | 設定菜單是否可以切換，true(禁用)或false(啟用)                   |
 
-1. 在同一目錄下建立 `docker-compose.yml`，把下面的內容貼上
+1. 在同一目錄下建立 `docker-compose.yaml`，把下面的內容貼上
 
 ```yaml
 services:
