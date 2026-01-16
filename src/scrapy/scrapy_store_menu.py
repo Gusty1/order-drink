@@ -109,6 +109,11 @@ def get_image_url(store: str, soup: BeautifulSoup) -> str:
         tag = tag.find('img')
         src = 'https:' + tag.get('data-src') if tag else ''
         return src
+    elif store == '青山':
+        tag = soup.find('div', class_='img-inner')
+        tag = tag.find('img')
+        src = tag.get('src') if tag else ''
+        return src
     return ''
 
 
@@ -190,12 +195,11 @@ def download_images_from_url(store: str):
 def main():
     parser = argparse.ArgumentParser(description="下載商家圖片")
     parser.add_argument('stores', nargs='+', type=str, help="商家編號清單（可多個）")
-    # 不知為啥鮮茶道本地跑就可以，用github action就不行
-    # download_images_from_url('鮮茶道')
-    # download_images_from_url('其他飲料店')
     args = parser.parse_args()
     for store in args.stores:
         download_images_from_url(store)
+    # 不知為啥鮮茶道本地跑就可以，用github action就不行
+    # download_images_from_url('鮮茶道')
 
 
 if __name__ == '__main__':
