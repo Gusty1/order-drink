@@ -153,6 +153,11 @@ const storeNames = [
     value: '吳家',
     label: '吳家紅茶冰',
     url: 'https://raw.githubusercontent.com/Gusty1/order-drink/refs/heads/master/src/assets/images/storeMenus/%E5%90%B3%E5%AE%B6.jpeg'
+  },
+  {
+    value: '青山',
+    label: '青山',
+    url: 'https://raw.githubusercontent.com/Gusty1/order-drink/refs/heads/master/src/assets/images/storeMenus/%E9%9D%92%E5%B1%B1.jpg'
   }
 ]
 

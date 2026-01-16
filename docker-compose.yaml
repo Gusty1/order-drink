@@ -5,7 +5,7 @@ services:
     volumes:
       - ./rethinkdb-data:/data
     ports:
-      - "8080:8080"
+      - "9000:8080"
       - "28015:28015"
     healthcheck:
       test: ["CMD-SHELL", "curl -f http://localhost:8080 || exit 1"]
