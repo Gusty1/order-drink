@@ -170,7 +170,7 @@ def download_images_from_url(store: str):
         url = tag.get('href')
         response = requests.get(url, headers=DEFAULT_HEADERS, verify=verify)
         response.raise_for_status()
-        convert_pdf_to_image(response.content, 5, get_output_path(f'{store}.jpg', ''))
+        convert_pdf_to_image(response.content, 3, get_output_path(f'{store}.jpg', ''))
         return None
     elif store == '迷客夏':
         tag = soup.find('div', class_='about_list')
