@@ -456,6 +456,8 @@ sketch
 .ionide
 
 rethinkdb_data/
+rethinkdb-data/
+public/env.js
 
 *~
 # End of https://www.toptal.com/developers/gitignore/api/python,pycharm,visualstudiocode,react,node

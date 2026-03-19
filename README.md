@@ -19,7 +19,7 @@
 - 前端: React 19 + Vite + Ant Design
 - 後端: Express 5
 - 狀態管理: Zustand
-- 即時通訊: Socket.IO
+- 即時通訊: `Socket.IO`
 - 資料存儲: RethinkDB
 - 菜單爬蟲: Python (BeautifulSoup + pdf2image)
 
@@ -47,7 +47,7 @@
    REACT_APP_ADMIN_PASSWORD=你的密碼   # 管理員密碼
    ```
 
-3. 安裝並啟動 RethinkDB（用預設設定即可）
+3. 安裝並啟動 [RethinkDB](https://rethinkdb.com/ 'RethinkDB')（用預設設定即可）
 4. 執行 `npm start`
 5. 用瀏覽器開啟 [http://127.0.0.1:5917](http://127.0.0.1:5917)
 
@@ -62,11 +62,11 @@
 | 變數名稱                        | 說明                               |
 | --------------------------- | -------------------------------- |
 | **REACT_APP_TITLE**           | 訂飲料頁面標題，例如：XX請喝飲料                |
-| **REACT_APP_STORE_NAME**      | 預設飲料店名稱，一定要寫，可以先寫迷客夏，可用飲料店名稱請看下面的[支援的店家](#支援的店家)                  |
+| **REACT_APP_STORE_NAME**      | 預設飲料店名稱，一定要寫，可用飲料店名稱請看下面的[支援的店家](#支援的店家)                  |
 | **REACT_APP_DISABLED_MENU** | 設定菜單是否可以切換，true(禁用)或false(啟用)                   |
 | **REACT_APP_ADMIN_PASSWORD** | 管理員密碼，雙擊頁面中央標題輸入此密碼即可成為管理員                   |
 
-2. 在同一目錄下建立 `docker-compose.yaml`，把下面的內容貼上
+1. 在同一目錄下建立 `docker-compose.yaml`，把下面的內容貼上
 
 ```yaml
 services:
@@ -101,21 +101,14 @@ services:
         condition: service_healthy
 ```
 
-3. 執行指令啟動服務：
+1. 執行指令啟動服務：
 
 ```bash
 docker compose up -d # 這會把服務另開，不會占用當前窗口
 docker compose up # 用當前窗口開啟服務
 ```
 
-4. 用瀏覽器開啟 [http://localhost:5918](http://localhost:5918)，可以把localhost換成你的`ip`或`電腦名稱`
-
-### 停止服務
-
-```bash
-docker compose down # 這會刪除容器
-docker compose stop # 這會停止服務
-```
+1. 用瀏覽器開啟 [http://localhost:5918](http://localhost:5918)，可以把localhost換成你的`ip`或`電腦名稱`
 
 ### 修改設定
 
@@ -126,6 +119,20 @@ docker compose up -d  # 會自動偵測變更並重建
 ```
 
 > **注意**：`docker compose restart` 不會重新讀取環境變數，必須用 `docker compose up -d` 才行
+
+## npm 與 Docker 的差異
+
+| 模式 | RethinkDB | 啟動方式 | 存取網址 |
+| ---- | --------- | ------- | ------- |
+| **Docker** | compose 自帶 `rethinkdb-order-drink` | `docker compose up -d` | `http://localhost:5918` |
+| **npm 開發** | 手動啟動 `rethinkdb-dev` | `docker start rethinkdb-dev` → `npm start` | `http://127.0.0.1:5917` |
+
+npm 開發模式下有兩個服務：Vite 開發伺服器（port 5917，提供前端頁面 + 熱更新）和 Express 後端（port 5918，API + `Socket.IO`），Vite 會透過 proxy 將 API 請求轉發給 5918，所以只需開 5917。Docker 模式下沒有 Vite，Express 直接提供打包好的靜態檔案，只有 5918 一個 port。
+
+兩者的 RethinkDB 都使用 port 28015，所以切換時需注意：
+
+- 要跑 Docker → 先 `docker stop rethinkdb-dev`
+- 要跑 npm → 先 `docker compose down`
 
 ## 菜單
 
