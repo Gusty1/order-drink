@@ -1,32 +1,9 @@
 import axios from 'axios'
-import { getEnv } from '../../utils/env' 
 
-const env = getEnv()
-
-// 創建一個 axios 實例
+// 開發模式由 Vite proxy 轉發，生產模式前後端同源，所以用相對路徑即可
 const axiosClient = axios.create({
-  baseURL: `http://${env.REACT_APP_ROOT_IP_ADDRESS}:5000/`,
-  timeout: 3000 // 設置請求超時時間
+  baseURL: '/',
+  timeout: 3000
 })
-
-// 請求攔截器
-axiosClient.interceptors.request.use(
-  (config) => {
-    return config
-  },
-  (error) => {
-    return Promise.reject(error)
-  }
-)
-
-// 響應攔截器
-axiosClient.interceptors.response.use(
-  (response) => {
-    return response
-  },
-  (error) => {
-    return Promise.reject(error)
-  }
-)
 
 export default axiosClient

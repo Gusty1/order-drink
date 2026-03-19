@@ -4,18 +4,19 @@ import { defaultSetting } from '../../constants'
 
 // 管理設定的 store
 const settingStore = create(
-  persist((set) => ({
-    setting: set?.setting ?? defaultSetting,
-    darkModeChange: () =>
-      set((state) => {
-        return {
+  persist(
+    (set) => ({
+      setting: defaultSetting,
+      darkModeChange: () =>
+        set((state) => ({
           setting: {
-            ...state,
+            ...state.setting,
             darkMode: !state.setting.darkMode
           }
-        }
-      })
-  }))
+        }))
+    }),
+    { name: 'setting-storage' }
+  )
 )
 
 export default settingStore

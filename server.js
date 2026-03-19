@@ -10,15 +10,18 @@ const cors = require('cors')
 const socketIo = require('socket.io')
 
 const app = express()
-const PORT = 5000
+const PORT = process.env.SERVER_PORT || 5918
 const server = http.createServer(app)
 const io = socketIo(server, {
   cors: {
     origin: '*' // 設定允許的跨域來源
   }
 })
-const dbConfig = { host: 'rethinkdb', port: 28015 }//docker用這邊的
-// const dbConfig = { host: '10.232.107.142', port: 28015 }//本地測試調整這邊
+// 本地自動讀 .env，Docker 由 environment 注入
+const dbConfig = {
+  host: process.env.RETHINKDB_HOST || 'localhost',
+  port: Number.parseInt(process.env.RETHINKDB_PORT, 10) || 28015
+}
 
 let connection = null
 const dbName = 'order_drink'
@@ -102,7 +105,7 @@ app.get('/getTodayOrders', async (req, res) => {
           .and(row('date').month().eq(utcMonth))
           .and(row('date').day().eq(utcDay))
       )
-      .orderBy(r.desc('id'))
+      .orderBy(r.desc('date'))
       .run(connection)
 
     // 將結果轉換為陣列
@@ -185,20 +188,17 @@ app.delete('/deleteOrder/:id', async (req, res) => {
   }
 })
 
-//取得一筆資料
+/**
+ * 取得一筆資料
+ */
 app.get('/getOrder/:id', async (req, res) => {
   try {
-    const { id } = req.params // 從URL中獲取id參數
-    // 確保id是有效的
-    if (!id) {
-      return res.status(400).json({ message: 'ID 无效' })
-    }
+    const { id } = req.params
 
-    // 根據id獲取數據
     const result = await r
       .db(dbName)
       .table(tableName)
-      .get(id) // 根據id查找該數據
+      .get(id)
       .run(connection)
 
     if (result) {
@@ -207,30 +207,10 @@ app.get('/getOrder/:id', async (req, res) => {
       res.status(404).json({ message: '查無資料' })
     }
   } catch (error) {
-    console.error('获取数据时出错:', error)
-    res.status(500).json({ error: error.message }) // 處理其他錯誤
+    console.error('取得資料時出錯:', error)
+    res.status(500).json({ error: error.message })
   }
 })
-
-/**
- * 獲取當前主機的 IPv4 地址
- */
-app.get('/userIP', (req, res) => {
-  try {
-    let clientIP = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
-
-    // 使用正則表達式清理 IPv6 表示法，提取 IPv4 部分
-    const ipv4Match = clientIP.match(/(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/);
-    if (ipv4Match) {
-      clientIP = ipv4Match[1];
-    }
-
-    return res.json({ address: clientIP || '' });
-  } catch (error) {
-    // 返回一致的結構
-    res.status(500).json({ address: null, error: '無法獲取 IP 地址' });
-  }
-});
 
 // 打包docker會用到的東西
 app.use(express.static(path.join(__dirname, "build")));
@@ -246,7 +226,7 @@ app.get(/.*/, (req, res) => {
 server.listen(PORT, async () => {
   await initializeDatabase()
   watchTableChanges()
-  console.log(`Server is running on http://${process.env.ROOT_IP_ADDRESS}:${PORT}`)
+  console.log(`Server is running on http://localhost:${PORT}`)
 })
 
 /**

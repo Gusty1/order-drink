@@ -1,18 +1,14 @@
 import { nanoid } from 'nanoid'
-import axiosClient from '../axios/axiosClient'
-import { getEnv } from '../../utils/env' 
 
-export const setUser = async () => {
-  const env = getEnv()
+/**
+ * 初始化使用者：若 localStorage 無記錄，生成一組 nanoid 作為身份識別
+ * 管理員身份改由 MyHeader 雙擊標題輸入密碼設定
+ */
+export const setUser = () => {
   const drinkUser = localStorage.getItem('drinkUser')
   if (!drinkUser) {
-    const { data } = await axiosClient.get('userIP')
-    if (data?.address === env.REACT_APP_REAL_ROOT_IP_ADDRESS) {
-      localStorage.setItem('drinkUser', JSON.stringify({ drinkUser: 'root' }))
-    } else {
-      const userID = nanoid()
-      localStorage.setItem('drinkUser', JSON.stringify({ drinkUser: userID }))
-    }
+    const userID = nanoid()
+    localStorage.setItem('drinkUser', JSON.stringify({ drinkUser: userID }))
   }
 }
 

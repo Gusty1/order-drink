@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Image, Select } from 'antd'
 import { storeNames } from '../../../constants'
 import { getEnv } from '../../../utils/env'
@@ -7,9 +7,9 @@ const FoodMenu = ({ storeName }) => {
   const [storeMenu, setStoreMenu] = useState(null)
   const env = getEnv()
 
-  useState(() => {
+  useEffect(() => {
     setStoreMenu(storeName)
-  }, [])
+  }, [storeName])
 
   const changeMenu = (menu) => {
     setStoreMenu(menu)
@@ -20,14 +20,19 @@ const FoodMenu = ({ storeName }) => {
   return (
     <>
       <Select
-        defaultValue={storeMenu}
-        style={{ marginBottom: 10, width: '100%' }}
-        onChange={(menu) => changeMenu(menu)}
+        value={storeMenu}
+        style={{ marginBottom: 12, width: '100%' }}
+        onChange={changeMenu}
         options={storeNames}
         disabled={env.REACT_APP_DISABLED_MENU}
+        showSearch
+        filterOption={(input, option) =>
+          option.label.toLowerCase().includes(input.toLowerCase())
+        }
       />
       <Image
         width="100%"
+        height={500}
         src={storeNames.find((item) => item.value === storeMenu).url}
         style={{
           objectFit: 'contain'

@@ -16,7 +16,14 @@ const App = () => {
       locale={zhTW}
       theme={{
         algorithm: setting.darkMode ? theme.darkAlgorithm : theme.defaultAlgorithm,
-        token: defaultThemeSet(setting)
+        token: defaultThemeSet(setting),
+        components: {
+          Layout: {
+            headerBg: setting.darkMode ? '#141414' : '#ffffff',
+            footerBg: setting.darkMode ? '#141414' : '#ffffff',
+            bodyBg: setting.darkMode ? '#141414' : '#ffffff'
+          }
+        }
       }}
     >
       {contextHolder}

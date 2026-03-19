@@ -1,9 +1,9 @@
 name: Get Drink Menu
 
 on:
-  workflow_dispatch:  # 手動觸發
+  workflow_dispatch: # 手動觸發
   schedule:
-    - cron: '0 1 * * 1'  # 每週一 UTC 01:00，=台灣時間週一早上 09:00，但是很不準時
+    - cron: '0 1 * * 1' # 每週一 UTC 01:00 = 台灣時間週一 09:00
 
 jobs:
   convert_pdf:
@@ -12,11 +12,9 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        with:
-          persist-credentials: true  # 確保 GITHUB_TOKEN 可用
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.13'
           cache: 'pip'
@@ -31,12 +29,11 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y poppler-utils
 
-      # 執行店家爬蟲程式
       - name: Run script for all stores
+        continue-on-error: true
         run: |
           python src/scrapy/scrapy_store_menu.py 19 comebuy teatop 五桐號 大苑子 珍煮丹 萬波 阿義 麻古 可不可 迷客夏 清原 花好月圓 茶湯會 大茗 上宇林 吳家 青山
 
-      # 把所有圖片一次commit
       - name: Commit and push updated images
         run: |
           git config --global user.name "github-actions[bot]"

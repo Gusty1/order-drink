@@ -4,123 +4,89 @@ import io from 'socket.io-client'
 import { EditFilled, DeleteFilled } from '@ant-design/icons'
 import { getTodayOrders, deleteOrder, getUser } from '../../../services'
 import { orderStore } from '../../../stores'
-import { getEnv } from '../../../utils/env' 
 import './OrderTable.css'
 
-const env = getEnv()
-const socket = io(`http://${env.REACT_APP_ROOT_IP_ADDRESS}:5000`) // 與後端 Socket.IO 連線
+// 開發模式由 Vite proxy 轉發，生產模式前後端同源，不帶參數即連到同源
+const socket = io()
+
+/** 甜度/冰塊數值對應文字 */
+const ICE_MAP = { 1: '正常', 2: '少冰', 3: '微冰', 4: '去冰', 5: '溫', 6: '熱' }
+const SWEET_MAP = { 1: '正常', 2: '少糖', 3: '半糖', 4: '微糖', 5: '無糖' }
 
 const OrderTable = ({ messageApi }) => {
   const [data, setData] = useState([])
   const { getOrder, order, resetOrder } = orderStore()
   const [orderID, setOrderID] = useState(null)
 
+  const editOrder = (id) => {
+    getOrder(id)
+  }
+
+  const delOrder = async (id) => {
+    await deleteOrder(id)
+    if (order?.data?.id === id) resetOrder()
+    messageApi.success('刪除成功')
+  }
+
   const columns = [
     {
       title: '稱呼',
       dataIndex: 'username',
-      key: 'username'
+      key: 'username',
+      width: '12%'
     },
     {
       title: '飲品',
       dataIndex: 'drink',
-      key: 'drink'
+      key: 'drink',
+      width: '20%',
+      ellipsis: true
     },
     {
       title: '冰塊',
       dataIndex: 'ice',
       key: 'ice',
-      render: (iceNum) => {
-        let showText = ''
-        switch (iceNum) {
-          case 1:
-            showText = '正常'
-            break
-          case 2:
-            showText = '少冰'
-            break
-          case 3:
-            showText = '微冰'
-            break
-          case 4:
-            showText = '去冰'
-            break
-          case 5:
-            showText = '溫'
-            break
-          default:
-            showText = '熱'
-        }
-
-        return <span>{showText}</span>
-      }
+      width: '8%',
+      render: (val) => ICE_MAP[val] || '未知'
     },
     {
       title: '甜度',
       dataIndex: 'sweet',
       key: 'sweet',
-      render: (sweetNum) => {
-        let showText = ''
-        switch (sweetNum) {
-          case 1:
-            showText = '正常'
-            break
-          case 2:
-            showText = '少糖'
-            break
-          case 3:
-            showText = '半糖'
-            break
-          case 4:
-            showText = '微糖'
-            break
-          default:
-            showText = '無糖'
-        }
-
-        return <span>{showText}</span>
-      }
+      width: '8%',
+      render: (val) => SWEET_MAP[val] || '未知'
     },
     {
       title: '備註',
       dataIndex: 'remark',
-      key: 'remark'
+      key: 'remark',
+      width: '20%',
+      ellipsis: true
     },
     {
       title: '價格*數量',
       dataIndex: 'price',
       key: 'price',
-      render: (price, fullData) => {
-        return <span>{price + '*' + fullData.count + '=' + price * fullData.count}</span>
-      },
-      sorter: {
-        compare: (a, b) => a.price - b.price
-      }
+      width: '15%',
+      render: (price, record) => `${price}*${record.count}=${price * record.count}`,
+      sorter: (a, b) => a.price * a.count - b.price * b.count
     },
     {
       title: '操作',
       dataIndex: 'id',
       key: 'operate',
-      render: (id, all) => {
+      width: '10%',
+      render: (id, record) => {
         const { drinkUser } = getUser()
-        const show = all.drinkUser === drinkUser || drinkUser === 'root'
+        const show = record.drinkUser === drinkUser || drinkUser === 'root'
         return (
-          <div
-            style={{
-              display: 'flex',
-              gap: '10px',
-              visibility: show ? 'visible' : 'hidden'
-            }}
-          >
+          <div style={{ display: 'flex', gap: 8, visibility: show ? 'visible' : 'hidden' }}>
             <Button
               type="primary"
               shape="circle"
               icon={<EditFilled />}
               onClick={() => {
-                window.scrollTo({
-                  top: 0,
-                  behavior: 'smooth' // 平滑滚动
-                })
+                window.scrollTo({ top: 0, behavior: 'smooth' })
                 editOrder(id)
               }}
             />
@@ -138,18 +104,6 @@ const OrderTable = ({ messageApi }) => {
     }
   ]
 
-  const editOrder = (id) => {
-    getOrder(id)
-  }
-  const delOrder = (id) => {
-    const delGo = async () => {
-      await deleteOrder(id)
-      if (order?.data.id === id) resetOrder()
-    }
-    delGo()
-    messageApi.success('刪除成功')
-  }
-
   useEffect(() => {
     const getData = async () => {
       const data = await getTodayOrders()
@@ -157,24 +111,20 @@ const OrderTable = ({ messageApi }) => {
       else if (data?.data?.data) {
         if (!data.data.data.find((item) => item.id === order.id)) resetOrder()
       }
-
       setData(data?.data?.data ?? [])
     }
 
-    const handleTableChange = (change) => {
-      //接收到變化要做的事
-      getData() // 呼叫異步方法
+    const handleTableChange = () => {
+      getData()
     }
 
-    // 監聽 'tableChange' 事件
     socket.on('tableChange', handleTableChange)
-
     getData()
 
-    // 清理函數，卸載時移除事件監聽
     return () => {
       socket.off('tableChange', handleTableChange)
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useEffect(() => {
@@ -188,17 +138,16 @@ const OrderTable = ({ messageApi }) => {
 
   return (
     <Table
+      tableLayout="fixed"
       columns={columns}
       dataSource={data}
       rowClassName={rowClassName}
       rowKey="id"
-      footer={() => {
-        return (
-          <div style={{ textAlign: 'right' }}>
-            總計: {data.reduce((acc, cur) => acc + cur.price * cur.count, 0)}
-          </div>
-        )
-      }}
+      footer={() => (
+        <div style={{ textAlign: 'right', fontWeight: 600 }}>
+          總計: {data.reduce((acc, cur) => acc + cur.price * cur.count, 0)}
+        </div>
+      )}
       bordered
       rowHoverable={false}
       pagination={false}

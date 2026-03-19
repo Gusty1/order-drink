@@ -1,7 +1,7 @@
 # -----------------------------
 # 第一階段：建構前端 (Builder)
 # -----------------------------
-FROM node:18 AS builder
+FROM node:22-alpine AS builder
 
 WORKDIR /app
 
@@ -14,28 +14,13 @@ RUN npm install
 # 複製源碼
 COPY . .
 
-# build-time ARG
-ARG REACT_APP_TITLE
-ARG REACT_APP_STORE_NAME
-ARG REACT_APP_ROOT_IP_ADDRESS
-ARG REACT_APP_REAL_ROOT_IP_ADDRESS
-ARG REACT_APP_DISABLED_MENU
-
-# 設定 ENV 給前端 build 使用
-ENV REACT_APP_TITLE=$REACT_APP_TITLE
-ENV REACT_APP_STORE_NAME=$REACT_APP_STORE_NAME
-ENV REACT_APP_ROOT_IP_ADDRESS=$REACT_APP_ROOT_IP_ADDRESS
-ENV REACT_APP_REAL_ROOT_IP_ADDRESS=$REACT_APP_REAL_ROOT_IP_ADDRESS
-ENV REACT_APP_DISABLED_MENU=$REACT_APP_DISABLED_MENU
-ENV NODE_ENV=production
-
-# 前端 build
+# 前端 build（環境變數由 runtime 的 env.js 注入，不需要 build-time ARG）
 RUN npm run build
 
 # -----------------------------
 # 第二階段：生產環境 (Production)
 # -----------------------------
-FROM node:18-slim
+FROM node:22-alpine
 
 WORKDIR /app
 
@@ -45,7 +30,7 @@ COPY --from=builder /app/server.js ./server.js
 COPY --from=builder /app/package*.json ./
 
 # 安裝 production 依賴
-RUN npm install --production
+RUN npm install --omit=dev
 
 # 複製 entrypoint 並確保 LF 格式
 COPY docker-entrypoint.sh /docker-entrypoint.sh
@@ -55,7 +40,7 @@ RUN chmod +x /docker-entrypoint.sh
 ENV NODE_ENV=production
 
 # 暴露端口
-EXPOSE 5000
+EXPOSE 5918
 
 # 啟動 entrypoint
 ENTRYPOINT ["/docker-entrypoint.sh"]

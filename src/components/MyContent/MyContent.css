@@ -1,14 +1,27 @@
 .contentContainer {
-  padding: 0 48px;
-}
-.content {
-  padding: 12px;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 24px 32px;
 }
 
 .titleContainer {
   text-align: center;
-  font-size: 32px;
-  margin-bottom: 10px;
-  font-weight: bold;
-  color: blueviolet;
+  font-size: 28px;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+.topSection {
+  display: flex;
+  gap: 32px;
+}
+
+.menuSection {
+  flex: 1;
+  min-width: 0;
+}
+
+.formSection {
+  flex: 1;
+  min-width: 0;
 }

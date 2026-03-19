@@ -14,25 +14,17 @@ services:
       start_period: 5s
 
   app:
-    build:
-      context: .
-      args:
-        REACT_APP_TITLE: ${REACT_APP_TITLE}
-        REACT_APP_STORE_NAME: ${REACT_APP_STORE_NAME}
-        REACT_APP_ROOT_IP_ADDRESS: ${REACT_APP_ROOT_IP_ADDRESS}
-        REACT_APP_REAL_ROOT_IP_ADDRESS: ${REACT_APP_REAL_ROOT_IP_ADDRESS}
-        REACT_APP_DISABLED_MENU: ${REACT_APP_DISABLED_MENU}
+    build: .
     image: gray9527/order-drink-app:latest # 若本地測試可註解掉
     container_name: order-drink-app
     environment:
-      - ROOT_IP_ADDRESS=${REACT_APP_ROOT_IP_ADDRESS}
       - REACT_APP_TITLE=${REACT_APP_TITLE}
       - REACT_APP_STORE_NAME=${REACT_APP_STORE_NAME}
-      - REACT_APP_ROOT_IP_ADDRESS=${REACT_APP_ROOT_IP_ADDRESS}
-      - REACT_APP_REAL_ROOT_IP_ADDRESS=${REACT_APP_REAL_ROOT_IP_ADDRESS}
       - REACT_APP_DISABLED_MENU=${REACT_APP_DISABLED_MENU}
+      - REACT_APP_ADMIN_PASSWORD=${REACT_APP_ADMIN_PASSWORD}
+      - RETHINKDB_HOST=rethinkdb
     ports:
-      - "5000:5000"
+      - "5918:5918"
     depends_on:
       rethinkdb:
         condition: service_healthy
