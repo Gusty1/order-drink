@@ -66,7 +66,7 @@
 | **REACT_APP_DISABLED_MENU** | 設定菜單是否可以切換，true(禁用)或false(啟用)                   |
 | **REACT_APP_ADMIN_PASSWORD** | 管理員密碼，雙擊頁面中央標題輸入此密碼即可成為管理員                   |
 
-1. 在同一目錄下建立 `docker-compose.yaml`，把下面的內容貼上
+2. 在同一目錄下建立 `docker-compose.yaml`，把下面的內容貼上
 
 ```yaml
 services:
@@ -101,14 +101,14 @@ services:
         condition: service_healthy
 ```
 
-1. 執行指令啟動服務：
+3. 執行指令啟動服務：
 
 ```bash
 docker compose up -d # 這會把服務另開，不會占用當前窗口
 docker compose up # 用當前窗口開啟服務
 ```
 
-1. 用瀏覽器開啟 [http://localhost:5918](http://localhost:5918)，可以把localhost換成你的`ip`或`電腦名稱`
+4. 用瀏覽器開啟 [http://localhost:5918](http://localhost:5918)，可以把localhost換成你的`ip`或`電腦名稱`
 
 ### 修改設定
 
