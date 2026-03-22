@@ -85,8 +85,7 @@ services:
       start_period: 5s
 
   app:
-    build: .
-    image: gray9527/order-drink-app:latest # 若本地測試可註解掉
+    image: gray9527/order-drink-app:latest
     container_name: order-drink-app
     environment:
       - REACT_APP_TITLE=${REACT_APP_TITLE}
@@ -99,9 +98,10 @@ services:
     depends_on:
       rethinkdb:
         condition: service_healthy
+    restart: unless-stopped
 ```
 
-3. 執行指令啟動服務：
+3. 執行指令啟動服務（Docker 會自動從 DockerHub 拉取 image）：
 
 ```bash
 docker compose up -d # 這會把服務另開，不會占用當前窗口
@@ -112,13 +112,14 @@ docker compose up # 用當前窗口開啟服務
 
 ### 修改設定
 
-修改 `.env` 後需要重建容器才會生效：
+修改 `.env` 後需要重啟容器才會生效：
 
 ```bash
-docker compose up -d  # 會自動偵測變更並重建
+docker compose down
+docker compose up -d
 ```
 
-> **注意**：`docker compose restart` 不會重新讀取環境變數，必須用 `docker compose up -d` 才行
+> **注意**：`docker compose restart` 不會重新讀取環境變數，必須先 `down` 再 `up` 才行
 
 ## npm 與 Docker 的差異
 
