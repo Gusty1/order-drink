@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import PropTypes from 'prop-types'
 import { Layout, Divider, Modal, Input } from 'antd'
 import FoodMenu from './FoodMenu/FoodMenu'
 import OrderForm from './OrderForm/OrderForm'
@@ -56,7 +57,10 @@ const MyContent = ({ messageApi }) => {
         title="管理員驗證"
         open={open}
         onOk={handleOk}
-        onCancel={() => { setOpen(false); setPassword('') }}
+        onCancel={() => {
+          setOpen(false)
+          setPassword('')
+        }}
         okText="確認"
         cancelText="取消"
       >
@@ -70,6 +74,10 @@ const MyContent = ({ messageApi }) => {
       </Modal>
     </Content>
   )
+}
+
+MyContent.propTypes = {
+  messageApi: PropTypes.object.isRequired
 }
 
 export default MyContent

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import PropTypes from 'prop-types'
 import { Image, Select } from 'antd'
 import { storeNames } from '../../../constants'
 import { getEnv } from '../../../utils/env'
@@ -32,7 +33,7 @@ const FoodMenu = ({ storeName }) => {
       />
       <Image
         width="100%"
-        height={500}
+        height={window.innerWidth <= 768 ? 280 : 500}
         src={storeNames.find((item) => item.value === storeMenu).url}
         style={{
           objectFit: 'contain'
@@ -42,16 +43,20 @@ const FoodMenu = ({ storeName }) => {
           <Image
             preview={false}
             src="https://c.tenor.com/d-lz7Nu6X2oAAAAC/tenor.gif"
-            width='100%'
+            width="100%"
             height="100%"
             style={{
-              objectFit: 'cover',
+              objectFit: 'cover'
             }}
           />
         }
       />
     </>
   )
+}
+
+FoodMenu.propTypes = {
+  storeName: PropTypes.string.isRequired
 }
 
 export default FoodMenu

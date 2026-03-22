@@ -1,13 +1,11 @@
 import { useEffect, useState } from 'react'
+import PropTypes from 'prop-types'
 import { Table, Button, Popconfirm } from 'antd'
 import io from 'socket.io-client'
 import { EditFilled, DeleteFilled } from '@ant-design/icons'
 import { getTodayOrders, deleteOrder, getUser } from '../../../services'
-import { orderStore } from '../../../stores'
+import { orderStore, settingStore } from '../../../stores'
 import './OrderTable.css'
-
-// 開發模式由 Vite proxy 轉發，生產模式前後端同源，不帶參數即連到同源
-const socket = io()
 
 /** 甜度/冰塊數值對應文字 */
 const ICE_MAP = { 1: '正常', 2: '少冰', 3: '微冰', 4: '去冰', 5: '溫', 6: '熱' }
@@ -15,17 +13,27 @@ const SWEET_MAP = { 1: '正常', 2: '少糖', 3: '半糖', 4: '微糖', 5: '無�
 
 const OrderTable = ({ messageApi }) => {
   const [data, setData] = useState([])
-  const { getOrder, order, resetOrder } = orderStore()
+  const { fetchOrder, order, resetOrder } = orderStore()
+  const { setting } = settingStore()
   const [orderID, setOrderID] = useState(null)
 
   const editOrder = (id) => {
-    getOrder(id)
+    fetchOrder(id)
   }
 
   const delOrder = async (id) => {
-    await deleteOrder(id)
-    if (order?.data?.id === id) resetOrder()
-    messageApi.success('刪除成功')
+    try {
+      const res = await deleteOrder(id)
+      if (res.status === 200) {
+        if (order?.data?.id === id) resetOrder()
+        messageApi.success('刪除成功')
+      } else {
+        messageApi.error('刪除失敗，資料不存在')
+      }
+    } catch (e) {
+      console.error('刪除飲料錯誤: ', e)
+      messageApi.error('刪除失敗，請稍後再試')
+    }
   }
 
   const columns = [
@@ -80,7 +88,9 @@ const OrderTable = ({ messageApi }) => {
         const { drinkUser } = getUser()
         const show = record.drinkUser === drinkUser || drinkUser === 'root'
         return (
-          <div style={{ display: 'flex', gap: 8, visibility: show ? 'visible' : 'hidden' }}>
+          <div
+            style={{ display: 'flex', gap: 8, visibility: show ? 'visible' : 'hidden' }}
+          >
             <Button
               type="primary"
               shape="circle"
@@ -105,6 +115,9 @@ const OrderTable = ({ messageApi }) => {
   ]
 
   useEffect(() => {
+    // 開發模式由 Vite proxy 轉發，生產模式前後端同源，不帶參數即連到同源
+    const socket = io()
+
     const getData = async () => {
       const data = await getTodayOrders()
       if (!order?.id) resetOrder()
@@ -123,8 +136,9 @@ const OrderTable = ({ messageApi }) => {
 
     return () => {
       socket.off('tableChange', handleTableChange)
+      socket.disconnect()
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useEffect(() => {
@@ -133,7 +147,8 @@ const OrderTable = ({ messageApi }) => {
   }, [order])
 
   const rowClassName = (record) => {
-    return record.id === orderID ? 'selected-row' : ''
+    if (record.id !== orderID) return ''
+    return setting.darkMode ? 'selected-row-dark' : 'selected-row'
   }
 
   return (
@@ -153,6 +168,10 @@ const OrderTable = ({ messageApi }) => {
       pagination={false}
     />
   )
+}
+
+OrderTable.propTypes = {
+  messageApi: PropTypes.object.isRequired
 }
 
 export default OrderTable

@@ -25,3 +25,18 @@
   flex: 1;
   min-width: 0;
 }
+
+@media (max-width: 768px) {
+  .contentContainer {
+    padding: 16px;
+  }
+
+  .titleContainer {
+    font-size: 22px;
+  }
+
+  .topSection {
+    flex-direction: column;
+    gap: 16px;
+  }
+}

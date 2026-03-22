@@ -2,7 +2,6 @@
   background-color: #e6f4ff !important;
 }
 
-/* 暗色模式下的選中行 */
-.ant-theme-dark .selected-row td {
+.selected-row-dark td {
   background-color: #111d2c !important;
 }

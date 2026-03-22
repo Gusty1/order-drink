@@ -12,7 +12,7 @@ const MyHeader = () => {
   return (
     <Header className="header">
       <button type="button" className="header-left" onClick={handleReload}>
-        <div className="header-logo" />
+        <img src="/favicon.ico" alt="logo" className="header-logo" />
         <span className="header-title">訂飲料</span>
       </button>
       <Switch

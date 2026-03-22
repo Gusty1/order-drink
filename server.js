@@ -1,8 +1,8 @@
 /**
  * 連接 RethinkDB 的 Express 伺服器
  */
-require('dotenv').config();
-const path = require('path');
+require('dotenv').config()
+const path = require('path')
 const express = require('express')
 const http = require('http')
 const r = require('rethinkdb')
@@ -12,11 +12,16 @@ const socketIo = require('socket.io')
 const app = express()
 const PORT = process.env.SERVER_PORT || 5918
 const server = http.createServer(app)
+
+// 內部區網使用，允許所有來源（含 IP 存取）
+const corsOptions = {
+  origin: '*'
+}
+
 const io = socketIo(server, {
-  cors: {
-    origin: '*' // 設定允許的跨域來源
-  }
+  cors: corsOptions
 })
+
 // 本地自動讀 .env，Docker 由 environment 注入
 const dbConfig = {
   host: process.env.RETHINKDB_HOST || 'localhost',
@@ -28,33 +33,36 @@ const dbName = 'order_drink'
 const tableName = 'orders'
 
 // 中間件：允許跨域請求與解析 JSON 格式的請求體
-app.use(cors())
+app.use(cors(corsOptions))
 app.use(express.json())
 
 /**
  * 初始化 RethinkDB 資料庫和資料表
  */
-async function initializeDatabase () {
+async function initializeDatabase() {
   try {
     // 連接 RethinkDB
-    connection = await r.connect(dbConfig);
-    console.log('✅ RethinkDB 連接成功');
+    connection = await r.connect(dbConfig)
+    console.log('✅ RethinkDB 連接成功')
 
     // 確認資料庫存在，不存在就建立
-    const dbs = await r.dbList().run(connection);
+    const dbs = await r.dbList().run(connection)
     if (!dbs.includes(dbName)) {
-      await r.dbCreate(dbName).run(connection);
-      console.log(`✅ Database "${dbName}" 建立成功`);
+      await r.dbCreate(dbName).run(connection)
+      console.log(`✅ Database "${dbName}" 建立成功`)
     }
 
     // 確認資料表，不存在就建立
-    const tables = await r.db(dbName).tableList().run(connection);
+    const tables = await r.db(dbName).tableList().run(connection)
 
     if (tables.includes(tableName)) {
-      console.log(`ℹ️ Table "${tableName}" 已存在，跳過建立`);
+      console.log(`ℹ️ Table "${tableName}" 已存在，跳過建立`)
     } else {
-      await r.db(dbName).tableCreate(tableName, { replicas: 1, shards: 1 }).run(connection);
-      console.log(`✅ Table "${tableName}" 建立成功 (replicas=1, shards=1)`);
+      await r
+        .db(dbName)
+        .tableCreate(tableName, { replicas: 1, shards: 1 })
+        .run(connection)
+      console.log(`✅ Table "${tableName}" 建立成功 (replicas=1, shards=1)`)
     }
   } catch (error) {
     console.error('初始化資料庫時出錯:', error)
@@ -64,22 +72,25 @@ async function initializeDatabase () {
 
 /**
  * 監聽資料表變化並透過 WebSocket 傳送更新
+ * 若 cursor 發生錯誤（如 DB 短暫斷線），5 秒後自動重試
  */
-async function watchTableChanges () {
+async function watchTableChanges() {
   try {
     const cursor = await r.db(dbName).table(tableName).changes().run(connection)
     console.log(`正在監聽資料表 "${tableName}" 的變化...`)
 
     cursor.each((err, change) => {
       if (err) {
-        console.error('監聽資料表變化時出錯:', err)
+        console.error('監聽資料表變化時出錯，5 秒後重試:', err)
+        setTimeout(watchTableChanges, 5000)
       } else {
         console.log('資料表變化:', change)
         io.emit('tableChange', change)
       }
     })
   } catch (error) {
-    console.error('設定資料表監聽器時出錯:', error)
+    console.error('設定資料表監聽器時出錯，5 秒後重試:', error)
+    setTimeout(watchTableChanges, 5000)
   }
 }
 
@@ -118,12 +129,51 @@ app.get('/getTodayOrders', async (req, res) => {
 })
 
 /**
+ * 驗證訂單欄位
+ * @param {object} data - 請求 body
+ * @returns {string|null} 錯誤訊息，無誤則回傳 null
+ */
+function validateOrder(data) {
+  const { username, drink, sweet, ice, count, price } = data
+
+  if (!username || typeof username !== 'string' || username.trim() === '') {
+    return '稱呼不可為空'
+  }
+  if (!drink || typeof drink !== 'string' || drink.trim() === '') {
+    return '飲品名稱不可為空'
+  }
+  const validSweet = [1, 2, 3, 4, 5]
+  if (!validSweet.includes(Number(sweet))) {
+    return '甜度值無效'
+  }
+  const validIce = [1, 2, 3, 4, 5, 6]
+  if (!validIce.includes(Number(ice))) {
+    return '冰塊值無效'
+  }
+  const parsedCount = Number(count)
+  if (!Number.isInteger(parsedCount) || parsedCount < 1 || parsedCount > 99) {
+    return '數量須為 1～99 的整數'
+  }
+  const parsedPrice = Number(price)
+  if (!Number.isFinite(parsedPrice) || parsedPrice < 0 || parsedPrice > 9999) {
+    return '價格須為 0～9999 的數字'
+  }
+
+  return null
+}
+
+/**
  * 插入資料
  */
 app.post('/setOrder', async (req, res) => {
   try {
     const data = req.body
     const { id } = data
+
+    const validationError = validateOrder(data)
+    if (validationError) {
+      return res.status(400).json({ error: validationError })
+    }
 
     let result
 
@@ -195,11 +245,7 @@ app.get('/getOrder/:id', async (req, res) => {
   try {
     const { id } = req.params
 
-    const result = await r
-      .db(dbName)
-      .table(tableName)
-      .get(id)
-      .run(connection)
+    const result = await r.db(dbName).table(tableName).get(id).run(connection)
 
     if (result) {
       res.status(200).json(result)
@@ -213,30 +259,34 @@ app.get('/getOrder/:id', async (req, res) => {
 })
 
 // 打包docker會用到的東西
-app.use(express.static(path.join(__dirname, "build")));
+app.use(express.static(path.join(__dirname, 'build')))
 
 // 最後面加這行處理所有未命中路由給前端
 app.get(/.*/, (req, res) => {
-  res.sendFile(path.join(__dirname, 'build', 'index.html'));
-});
-
-/**
- * 啟動伺服器
- */
-server.listen(PORT, async () => {
-  await initializeDatabase()
-  watchTableChanges()
-  console.log(`Server is running on http://localhost:${PORT}`)
+  res.sendFile(path.join(__dirname, 'build', 'index.html'))
 })
 
 /**
- * 在伺服器關閉時釋放資料庫連接
+ * 優雅關閉：關閉 DB 連線後退出
  */
-process.on('SIGINT', async () => {
-  console.log('伺服器正在關閉...')
+async function gracefulShutdown(signal) {
+  console.log(`收到 ${signal}，伺服器正在關閉...`)
   if (connection) {
     await connection.close()
     console.log('RethinkDB 連接已關閉')
   }
   process.exit(0)
+}
+
+process.on('SIGINT', () => gracefulShutdown('SIGINT'))
+process.on('SIGTERM', () => gracefulShutdown('SIGTERM'))
+
+/**
+ * 啟動伺服器：先完成 DB 初始化，再開始接受請求
+ */
+initializeDatabase().then(() => {
+  server.listen(PORT, () => {
+    watchTableChanges()
+    console.log(`Server is running on http://localhost:${PORT}`)
+  })
 })

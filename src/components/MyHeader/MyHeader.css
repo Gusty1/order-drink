@@ -3,7 +3,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 0 32px;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  border-bottom: 1px solid var(--ant-color-border-secondary);
 }
 
 .header-left {
@@ -17,12 +17,9 @@
 }
 
 .header-logo {
-  background-image: url('../../assets/images/logo.png');
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: center;
-  width: 120px;
-  height: 48px;
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
 }
 
 .header-title {

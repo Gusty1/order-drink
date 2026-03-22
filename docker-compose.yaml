@@ -17,6 +17,7 @@ services:
     build: .
     image: gray9527/order-drink-app:latest # 若本地測試可註解掉
     container_name: order-drink-app
+    restart: unless-stopped
     environment:
       - REACT_APP_TITLE=${REACT_APP_TITLE}
       - REACT_APP_STORE_NAME=${REACT_APP_STORE_NAME}
@@ -28,3 +29,9 @@ services:
     depends_on:
       rethinkdb:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O- http://localhost:5918 || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s

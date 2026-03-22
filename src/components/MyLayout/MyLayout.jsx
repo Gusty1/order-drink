@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import PropTypes from 'prop-types'
 import { Layout } from 'antd'
 import MyHeader from '../MyHeader/MyHeader'
 import MyContent from '../MyContent/MyContent'
@@ -18,4 +19,8 @@ const MyLayout = ({ messageApi }) => {
     </Layout>
   )
 }
+MyLayout.propTypes = {
+  messageApi: PropTypes.object.isRequired
+}
+
 export default MyLayout

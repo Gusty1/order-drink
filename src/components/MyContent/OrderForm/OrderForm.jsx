@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
-import { Button, Form, Input, Radio } from 'antd'
+import PropTypes from 'prop-types'
+import { Button, Form, Input, InputNumber, Radio } from 'antd'
 import { SendOutlined, CloseOutlined } from '@ant-design/icons'
 import { getUser, setOrder } from '../../../services'
 import { orderStore } from '../../../stores'
@@ -30,7 +31,7 @@ const OrderForm = ({ messageApi }) => {
         ...data,
         drinkUser,
         id: orderID ? orderID : null,
-        price: data.price ? parseInt(data.price) : 0,
+        price: data.price ?? 0,
         date: new Date()
       }
       await setOrder(formData)
@@ -39,6 +40,7 @@ const OrderForm = ({ messageApi }) => {
       messageApi.success('送出成功')
     } catch (e) {
       console.error('送出飲料錯誤: ', e)
+      messageApi.error('送出失敗，請稍後再試')
     } finally {
       setSending(false)
     }
@@ -126,21 +128,23 @@ const OrderForm = ({ messageApi }) => {
             required: true,
             message: '必須輸入!!!'
           }
-        ]}>
-        <Input type="number" />
+        ]}
+      >
+        <InputNumber min={1} max={99} style={{ width: '100%' }} />
       </Form.Item>
 
       <Form.Item
         label="價格"
         name="price"
-        initialValue=""
+        initialValue={0}
         rules={[
           {
             required: true,
             message: '必須輸入!!!'
           }
-        ]}>
-        <Input type="number" />
+        ]}
+      >
+        <InputNumber min={0} max={9999} style={{ width: '100%' }} />
       </Form.Item>
 
       <Form.Item label="備註" name="remark" initialValue="">
@@ -148,17 +152,19 @@ const OrderForm = ({ messageApi }) => {
       </Form.Item>
 
       <Form.Item label="" style={{ textAlign: 'right' }}>
-        <Button
-          type="default"
-          htmlType="button"
-          icon={<CloseOutlined />}
-          iconPlacement="start"
-          color="gold"
-          style={{ marginRight: '10px', display: orderID ? 'inline' : 'none' }}
-          onClick={() => resetOrder()}
-        >
-          取消
-        </Button>
+        {orderID && (
+          <Button
+            type="default"
+            htmlType="button"
+            icon={<CloseOutlined />}
+            iconPlacement="start"
+            color="gold"
+            style={{ marginRight: '10px' }}
+            onClick={() => resetOrder()}
+          >
+            取消
+          </Button>
+        )}
         <Button
           type="primary"
           htmlType="submit"
@@ -171,6 +177,10 @@ const OrderForm = ({ messageApi }) => {
       </Form.Item>
     </Form>
   )
+}
+
+OrderForm.propTypes = {
+  messageApi: PropTypes.object.isRequired
 }
 
 export default OrderForm

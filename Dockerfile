@@ -1,12 +1,15 @@
 # -----------------------------
 # 第一階段：建構前端 (Builder)
 # -----------------------------
-FROM node:22-alpine AS builder
+FROM node:22.14.0-alpine3.21 AS builder
 
 WORKDIR /app
 
 # 複製 package.json 以便利用 cache
 COPY package*.json ./
+
+# 升級 npm 至最新穩定版，避免舊版 npm 的 Exit handler bug
+RUN npm install -g npm@latest
 
 # 安裝所有依賴（包含 devDependencies）
 RUN npm install
@@ -20,7 +23,7 @@ RUN npm run build
 # -----------------------------
 # 第二階段：生產環境 (Production)
 # -----------------------------
-FROM node:22-alpine
+FROM node:22.14.0-alpine3.21
 
 WORKDIR /app
 
@@ -28,6 +31,9 @@ WORKDIR /app
 COPY --from=builder /app/build ./build
 COPY --from=builder /app/server.js ./server.js
 COPY --from=builder /app/package*.json ./
+
+# 升級 npm 至最新穩定版
+RUN npm install -g npm@latest
 
 # 安裝 production 依賴
 RUN npm install --omit=dev

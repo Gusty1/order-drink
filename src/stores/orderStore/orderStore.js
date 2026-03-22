@@ -7,7 +7,7 @@ const orderStore = create((set) => ({
   resetOrder: () => {
     set({ order: null })
   },
-  getOrder: async (id) => {
+  fetchOrder: async (id) => {
     const thisOrder = await getOrder(id)
     set({ order: thisOrder })
   }
