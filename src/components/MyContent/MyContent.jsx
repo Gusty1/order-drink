@@ -8,9 +8,13 @@ import { getEnv } from '../../utils/env'
 import { getUser } from '../../services'
 import './MyContent.css'
 
+// M6: getEnv() 移至元件外部，只在模組載入時執行一次，避免每次 render 都建立新物件
+const env = getEnv()
+const { Content } = Layout
+// L2: 替換魔術數字，語意明確
+const RELOAD_DELAY_MS = 800
+
 const MyContent = ({ messageApi }) => {
-  const { Content } = Layout
-  const env = getEnv()
   const [open, setOpen] = useState(false)
   const [password, setPassword] = useState('')
 
@@ -31,7 +35,7 @@ const MyContent = ({ messageApi }) => {
       messageApi.success('已切換為管理員，重新整理頁面')
       setOpen(false)
       setPassword('')
-      setTimeout(() => window.location.reload(), 800)
+      setTimeout(() => window.location.reload(), RELOAD_DELAY_MS)
     } else {
       messageApi.error('密碼錯誤')
     }

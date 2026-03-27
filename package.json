@@ -9,6 +9,7 @@
     "dotenv": "^17.3.1",
     "express": "^5.2.1",
     "nanoid": "^5.1.7",
+    "prop-types": "^15.8.1",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "rethinkdb": "^2.4.2",

@@ -26,7 +26,8 @@ const OrderForm = ({ messageApi }) => {
   const sendForm = async (data) => {
     try {
       setSending(true)
-      const { drinkUser } = order?.data || getUser()
+      // M7: getUser() 可能回傳 null，加入 || {} 避免解構 null crash
+      const { drinkUser } = order?.data || getUser() || {}
       const formData = {
         ...data,
         drinkUser,

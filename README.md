@@ -71,7 +71,7 @@
 ```yaml
 services:
   rethinkdb:
-    image: rethinkdb:latest
+    image: rethinkdb:2.4
     container_name: rethinkdb-order-drink
     volumes:
       - ./rethinkdb-data:/data

@@ -123,8 +123,9 @@ app.get('/getTodayOrders', async (req, res) => {
     const data = await result.toArray()
     res.status(200).json({ message: '查詢成功', data })
   } catch (error) {
-    console.error('查詢今天資料時出錯:', error)
-    res.status(500).json({ error: error.message })
+    // M5: 記錄詳細錯誤於伺服器，僅回傳通用訊息給客戶端，避免洩漏 DB 內部資訊
+    console.error('[getTodayOrders] 查詢今天資料時出錯:', error)
+    res.status(500).json({ error: '伺服器發生錯誤，請稍後再試' })
   }
 })
 
@@ -194,12 +195,13 @@ app.post('/setOrder', async (req, res) => {
         res.status(404).json({ message: '資料未找到，更新失敗' })
       }
     } else {
-      delete data.id
+      // L6: 改用解構排除，避免直接 mutation 入參物件
+      const { id: _id, ...insertData } = data
       result = await r
         .db(dbName)
         .table(tableName)
         .insert({
-          ...data,
+          ...insertData,
           date: r.now()
         })
         .run(connection)
@@ -207,8 +209,8 @@ app.post('/setOrder', async (req, res) => {
       res.status(201).json({ message: '插入成功', result })
     }
   } catch (error) {
-    console.error('插入或更新資料時出錯:', error)
-    res.status(500).json({ error: error.message })
+    console.error('[setOrder] 插入或更新資料時出錯:', error)
+    res.status(500).json({ error: '伺服器發生錯誤，請稍後再試' })
   }
 })
 
@@ -233,8 +235,8 @@ app.delete('/deleteOrder/:id', async (req, res) => {
       res.status(404).json({ message: '資料未找到' })
     }
   } catch (error) {
-    console.error('刪除資料時出錯:', error)
-    res.status(500).json({ error: error.message })
+    console.error('[deleteOrder] 刪除資料時出錯:', error)
+    res.status(500).json({ error: '伺服器發生錯誤，請稍後再試' })
   }
 })
 
@@ -253,8 +255,8 @@ app.get('/getOrder/:id', async (req, res) => {
       res.status(404).json({ message: '查無資料' })
     }
   } catch (error) {
-    console.error('取得資料時出錯:', error)
-    res.status(500).json({ error: error.message })
+    console.error('[getOrder] 取得資料時出錯:', error)
+    res.status(500).json({ error: '伺服器發生錯誤，請稍後再試' })
   }
 })
 

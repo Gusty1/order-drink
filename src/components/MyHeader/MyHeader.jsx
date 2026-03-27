@@ -3,8 +3,10 @@ import { MoonFilled, SunFilled } from '@ant-design/icons'
 import { settingStore } from '../../stores'
 import './MyHeader.css'
 
+// L3: Header 是穩定的 Ant Design 元件，移至模組頂層解構，避免每次 render 重複解構
+const { Header } = Layout
+
 const MyHeader = () => {
-  const { Header } = Layout
   const { setting, darkModeChange } = settingStore()
 
   const handleReload = () => window.location.reload()
