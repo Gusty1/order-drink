@@ -6,14 +6,13 @@
 
 import os
 import json
+import warnings
 import argparse
 import requests
 import urllib3
+from urllib.parse import urlparse
 from bs4 import BeautifulSoup
 from pdf2image import convert_from_bytes
-
-# 部分店家的 SSL 憑證有問題，關閉警告
-urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 DEFAULT_HEADERS = {
     "User-Agent": (
@@ -23,7 +22,7 @@ DEFAULT_HEADERS = {
     )
 }
 
-# 需要關閉 SSL 驗證的店家清單
+# 需要關閉 SSL 驗證的店家清單（對方網站憑證有問題）
 SSL_SKIP_STORES = {'可不可', '迷客夏', '鮮茶道'}
 
 
@@ -39,13 +38,29 @@ def get_output_path(store, ext=''):
     return os.path.join(root_dir, 'src', 'assets', 'images', 'storeMenus', f'{store}{ext}')
 
 
-def load_store_dict():
-    """讀取 storeAndUrl.json，回傳 {商家名稱: URL} 字典"""
+def load_store_list():
+    """
+    讀取 storeAndUrl.json，回傳原始清單（list of dict）。
+    同時提供 dict 形式方便 URL 查找。
+    :return: (store_list, store_dict)
+        store_list: [{"store": ..., "url": ...}, ...]
+        store_dict: {"商家名稱": "URL", ...}
+    """
     base_dir = os.path.dirname(os.path.abspath(__file__))
     path = os.path.join(base_dir, 'storeAndUrl.json')
     with open(path, "r", encoding="utf-8") as f:
-        store_and_url_ary = json.load(f)
-    return {item["store"]: item["url"] for item in store_and_url_ary}
+        store_list = json.load(f)
+    store_dict = {item["store"]: item["url"] for item in store_list}
+    return store_list, store_dict
+
+
+def get_base_url(store_url):
+    """
+    從完整 URL 提取 scheme + host 作為 base URL（結尾含斜線）。
+    例如：'https://www.truedan.com.tw/product.php' → 'https://www.truedan.com.tw/'
+    """
+    parsed = urlparse(store_url)
+    return f"{parsed.scheme}://{parsed.netloc}/"
 
 
 def safe_find(tag, *args, **kwargs):
@@ -69,12 +84,20 @@ def safe_get(tag, attr):
     return tag.get(attr, '')
 
 
-def get_image_url(store, soup):
+def get_image_url(store, soup, store_dict):
     """
     根據不同商家的 HTML 結構，抓取菜單圖片 URL。
     每家店的網頁結構不同，需要各自處理。
+    :param store: 商家名稱
+    :param soup: BeautifulSoup 解析結果
+    :param store_dict: {商家名稱: URL} 字典，用於提取各店家 base URL
     :return: 圖片 URL 字串，找不到則回傳空字串
     """
+    # L1/L2: base URL 統一從 store_dict 提取，避免多處 hardcode
+    truedan_base = get_base_url(store_dict.get('珍煮丹', ''))
+    wanpo_base = get_base_url(store_dict.get('萬波', ''))
+    macu_base = get_base_url(store_dict.get('麻古', ''))
+
     # 各店家圖片擷取策略
     strategies = {
         '19': lambda s: safe_get(s.find('a', class_='_clip_slider__link'), 'href'),
@@ -82,10 +105,10 @@ def get_image_url(store, soup):
         'teatop': lambda s: safe_get(safe_find(s.find('div', class_='textEditor'), 'img'), 'src'),
         '五桐號': lambda s: safe_get(safe_find(s.find('div', class_='desktopArea'), 'img'), 'src'),
         '大苑子': lambda s: _prefix('https:', safe_get(safe_find(s.find('picture', class_='skip-lazy'), 'img'), 'src')),
-        '珍煮丹': lambda s: _prefix('https://www.truedan.com.tw/', safe_get(s.find('a', class_='fancybox-menu'), 'href')),
-        '萬波': lambda s: _prefix('https://wanpotea.com/', safe_get(safe_find_parent(s.find('img', src='images/menu-y-1.svg'), 'a'), 'href')),
+        '珍煮丹': lambda s: _prefix(truedan_base, safe_get(s.find('a', class_='fancybox-menu'), 'href')),
+        '萬波': lambda s: _prefix(wanpo_base, safe_get(safe_find_parent(s.find('img', src='images/menu-y-1.svg'), 'a'), 'href')),
         '阿義': lambda s: safe_get(safe_find(s.find('div', class_='ayd01_a02'), 'a'), 'href'),
-        '麻古': lambda s: _get_macu_url(s),
+        '麻古': lambda s: _get_macu_url(s, macu_base),
         '清原': lambda s: safe_get(safe_find_parent(s.find('img', class_='wp-image-2488'), 'a'), 'href'),
         '花好月圓': lambda s: safe_get(safe_find(s.find('div', class_='menuArea'), 'img'), 'src'),
         '茶湯會': lambda s: safe_get(s.find('a', class_='btn01'), 'href'),
@@ -107,13 +130,13 @@ def _prefix(prefix, url):
     return prefix + url if url else ''
 
 
-def _get_macu_url(soup):
+def _get_macu_url(soup, base_url):
     """麻古茶坊：取第二個 menuListSub 下的連結"""
     tags = soup.find_all('nav', class_='menuListSub')
     if len(tags) < 2:
         return ''
     link = tags[1].find('a')
-    return _prefix('https://www.macutea.com.tw/', safe_get(link, 'href'))
+    return _prefix(base_url, safe_get(link, 'href'))
 
 
 def _get_shangyulin_url(soup):
@@ -162,7 +185,7 @@ def convert_pdf_to_image(pdf_data, page_number, output_image_path):
         print("無法提取該頁面作為圖片")
 
 
-def download_pdf_menu(store, soup, verify):
+def download_pdf_menu(store, soup, store_dict, verify):
     """
     處理 PDF 菜單的店家（可不可、迷客夏）。
     先從 HTML 找到 PDF 連結，下載後轉為圖片。
@@ -172,8 +195,10 @@ def download_pdf_menu(store, soup, verify):
         url = safe_get(tag, 'href')
         page = 3
     elif store == '迷客夏':
+        # L2: base URL 從 store_dict 提取，不再 hardcode
+        milksha_base = get_base_url(store_dict.get('迷客夏', ''))
         tag = safe_find(soup.find('div', class_='about_list'), 'a')
-        url = _prefix('https://www.milksha.com/', safe_get(tag, 'href'))
+        url = _prefix(milksha_base, safe_get(tag, 'href'))
         page = 1
     else:
         return
@@ -182,19 +207,25 @@ def download_pdf_menu(store, soup, verify):
         print(f'商家 {store} 找不到 PDF 連結')
         return
 
-    response = requests.get(url, headers=DEFAULT_HEADERS, verify=verify, timeout=30)
+    # H1: 僅在需要跳過 SSL 驗證的請求時，以 context manager 抑制警告，
+    # 避免全域關閉影響同程序中其他 HTTP 請求的安全警告。
+    with warnings.catch_warnings():
+        if not verify:
+            warnings.simplefilter('ignore', urllib3.exceptions.InsecureRequestWarning)
+        response = requests.get(url, headers=DEFAULT_HEADERS, verify=verify, timeout=30)
     response.raise_for_status()
     convert_pdf_to_image(response.content, page, get_output_path(f'{store}.jpg'))
 
 
-def download_images_from_url(store):
+def download_images_from_url(store, store_dict):
     """
     爬蟲主流程：根據商家名稱，抓取對應的菜單圖片。
-    1. 從 storeAndUrl.json 取得 URL
+    1. 從 store_dict 取得 URL
     2. 抓取 HTML
     3. 根據店家類型，走 PDF 流程或一般圖片下載流程
+    :param store: 商家名稱
+    :param store_dict: {商家名稱: URL} 字典（由 main 傳入，避免重複 I/O）
     """
-    store_dict = load_store_dict()
     store_url = store_dict.get(store)
 
     if not store_url:
@@ -203,22 +234,26 @@ def download_images_from_url(store):
 
     verify = store not in SSL_SKIP_STORES
 
-    try:
-        response = requests.get(store_url, headers=DEFAULT_HEADERS, verify=verify, timeout=15)
-        response.raise_for_status()
-    except Exception as e:
-        print(f'無法連線到 {store_url}：{e}')
-        return
+    # H1: 以 context manager 抑制特定請求的 SSL 警告，範圍最小化
+    with warnings.catch_warnings():
+        if not verify:
+            warnings.simplefilter('ignore', urllib3.exceptions.InsecureRequestWarning)
+        try:
+            response = requests.get(store_url, headers=DEFAULT_HEADERS, verify=verify, timeout=15)
+            response.raise_for_status()
+        except Exception as e:
+            print(f'無法連線到 {store_url}：{e}')
+            return
 
     soup = BeautifulSoup(response.text, 'html.parser')
 
     # PDF 菜單店家走獨立流程
     if store in ('可不可', '迷客夏'):
-        download_pdf_menu(store, soup, verify)
+        download_pdf_menu(store, soup, store_dict, verify)
         return
 
     # 一般圖片下載流程
-    img_url = get_image_url(store, soup)
+    img_url = get_image_url(store, soup, store_dict)
     if not img_url:
         print(f'商家 {store} 沒有找到圖片 URL')
         return
@@ -232,9 +267,12 @@ def main():
     parser.add_argument('stores', nargs='+', type=str, help="商家名稱清單（可多個，以空格分隔）")
     args = parser.parse_args()
 
+    # L3: store_dict 在批次處理頂層讀取一次，不在每家店重複 I/O
+    _store_list, store_dict = load_store_list()
+
     for store in args.stores:
         print(f'\n--- 處理商家: {store} ---')
-        download_images_from_url(store)
+        download_images_from_url(store, store_dict)
 
 
 if __name__ == '__main__':
