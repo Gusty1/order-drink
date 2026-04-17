@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import PropTypes from 'prop-types'
-import { Layout } from 'antd'
+import { FloatButton, Layout } from 'antd'
 import MyHeader from '../MyHeader/MyHeader'
 import MyContent from '../MyContent/MyContent'
 import MyFooter from '../MyFooter/MyFooter'
@@ -16,6 +16,7 @@ const MyLayout = ({ messageApi }) => {
       <MyHeader />
       <MyContent messageApi={messageApi} />
       <MyFooter />
+      <FloatButton.BackTop visibilityHeight={300} />
     </Layout>
   )
 }

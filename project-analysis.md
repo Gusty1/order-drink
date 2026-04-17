@@ -1,5 +1,5 @@
 # 專案分析報告
-> 生成日期：2026-03-27 | 最後更新：2026-03-27（全部問題已修復，僅餘設計決策）
+> 生成日期：2026-03-27 | 最後更新：2026-04-17（移除本地圖片資產，改為遠端 JSON；移除 scrapy 工具與 workflow）
 
 ## 總體評估
 
@@ -16,8 +16,8 @@
 | `server.js` CORS `origin: '*'` | 允許任意來源存取 API，未限縮至特定 origin | 本專案僅供工廠/公司內網部署，無對外開放需求。若未來有外網暴露，應改回條件式 origin 驗證（僅允許同源與 localhost:5917） |
 | `.gitignore` 中 `.env` 被注釋 | `REACT_APP_ADMIN_PASSWORD` 理論上可被提交 | 管理員密碼功能是讓當天負責點飲料的人持有，前端本就可見，屬於刻意設計。純內網使用，風險可接受 |
 | RethinkDB port 9000/28015 暴露 | 管理介面與 DB 連線 port 暴露至 host | 純內網環境，port 8080 已對應至 9000 避免明顯暴露，風險可接受 |
-| `tools/scrapy/storeAndUrl.json` 鮮茶道使用 http | `http://www.presotea.com.tw/menu.php` 為明文 HTTP | 對方網站本身不支援 HTTPS，爬蟲工具非生產服務，風險可接受 |
-| `tools/scrapy/scrapy_store_menu.py` path traversal 防禦 | `get_output_path()` 未驗證商家名稱是否含路徑字元 | 輸入來源為本地 CLI 或 GitHub Actions workflow，均為受信任環境，非對外 API。路徑驗證的防禦成本高於實際風險，維持現狀 |
+| `tools/scrapy/storeAndUrl.json` 鮮茶道使用 http | `http://www.presotea.com.tw/menu.php` 為明文 HTTP | 已隨 scrapy 工具一同移除，不再適用 |
+| `tools/scrapy/scrapy_store_menu.py` path traversal 防禦 | `get_output_path()` 未驗證商家名稱是否含路徑字元 | 已隨 scrapy 工具一同移除，不再適用 |
 
 ---
 
@@ -52,10 +52,10 @@ order-drink/
 │   ├── App.jsx              # 根元件：ConfigProvider + 主題（職責清晰）
 │   ├── index.jsx            # Entry point
 │   ├── components/
-│   │   ├── MyLayout/        # 頁面佈局容器 + user 初始化（職責略混雜）
+│   │   ├── MyLayout/        # 頁面佈局容器 + user 初始化 + BackTop（職責略混雜）
 │   │   ├── MyHeader/        # Header + 暗色模式切換（職責清晰）
 │   │   ├── MyContent/       # 主內容容器 + 管理員驗證邏輯（職責略重）
-│   │   │   ├── FoodMenu/    # 菜單圖片顯示
+│   │   │   ├── FoodMenu/    # 菜單圖片顯示（從遠端 JSON 動態取店家清單）
 │   │   │   ├── OrderForm/   # 訂單表單
 │   │   │   └── OrderTable/  # 訂單列表 + Socket.IO 連線（職責過重）
 │   │   └── MyFooter/        # 頁腳（簡單）
@@ -66,20 +66,16 @@ order-drink/
 │   │   ├── axios/           # axiosClient 設定
 │   │   ├── rethinkDB/       # API 呼叫層（命名具誤導性，實為 HTTP client）
 │   │   └── user/            # localStorage user 管理
-│   ├── constants/           # 靜態設定與菜單資料
+│   ├── constants/           # 靜態設定（storeNames 已移除，改為遠端 fetch）
 │   └── utils/               # env 工具函式
-├── tools/
-│   └── scrapy/              # 爬蟲工具（開發輔助，非生產服務）
-│       ├── scrapy_store_menu.py
-│       └── storeAndUrl.json
-└── .github/
-    └── workflows/
-        └── getDrinkMenu.yml # 每週一自動更新菜單圖片
+└── （tools/scrapy 與 .github/workflows/getDrinkMenu.yml 已移除）
+    # 菜單資料改由 Database repo 的 GitHub Pages 提供
+    # https://gusty1.github.io/Database/order-drink/storeMenus.json
 ```
 
 **評估：**
 
-整體結構清晰，層次分明。`tools/scrapy/` 獨立於主應用程式，職責明確。GitHub Actions workflow 整合良好，能自動化維護菜單圖片資產。
+整體結構清晰，層次分明。菜單圖片資產已從本地移除，改由外部 GitHub Pages JSON 動態提供，未來新增或修改店家菜單只需更新 Database repo，無需重新打包本專案。
 
 `services/rethinkDB/rethinkDB.js` 命名具有誤導性：此層實際上是前端的 HTTP API client，與 RethinkDB 無直接關係，更好的命名應為 `services/api/orderApi.js`。
 
@@ -89,17 +85,9 @@ order-drink/
 
 `OrderTable` 同時管理 Socket.IO 連線、資料取得、列表渲染，職責過重。
 
-### 爬蟲工具（tools/scrapy）評估
+### 爬蟲工具
 
-**優點：**
-- 完整的 docstring 與 inline 註解
-- `safe_find` / `safe_get` 等 helper 函式防禦 None 呼叫，程式碼健壯
-- 各店家擷取策略集中在 `strategies` dict，新增店家只需一行
-- `continue-on-error: true` 確保單一店家失敗不中斷整個 workflow
-- `requirements.txt` 版本已釘定（非 latest）
-- base URL 統一從 `storeAndUrl.json` 提取，無多處 hardcode
-- `load_store_list()` 在批次處理頂層呼叫一次，避免重複 I/O
-- SSL 警告以 `warnings.catch_warnings()` context manager 控制，作用範圍最小化
+已移除。菜單資料來源改為 Database repo 的 GitHub Pages JSON（`https://gusty1.github.io/Database/order-drink/storeMenus.json`），由 Database repo 自行維護更新流程。
 
 ### 元件設計
 
@@ -130,14 +118,9 @@ order-drink/
 | `eslint` | ^9.39.4 | 10.x 為 major 跳升，升級前需驗證設定相容性 |
 | `prop-types` | ^15.8.1 | 已明確加入 dependencies |
 
-### 爬蟲工具依賴（requirements.txt）
+### 爬蟲工具依賴
 
-| 套件 | 版本 | 說明 |
-|------|------|------|
-| `beautifulsoup4` | 4.14.3 | 已釘定，正常 |
-| `pdf2image` | 1.17.0 | 已釘定，需搭配系統層 `poppler-utils`（workflow 有安裝） |
-| `pillow` | 12.1.1 | 已釘定，正常 |
-| `requests` | 2.32.5 | 已釘定，正常 |
+已隨 scrapy 工具一同移除，不再適用。
 
 ---
 
